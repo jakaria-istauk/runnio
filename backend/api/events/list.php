@@ -12,7 +12,12 @@ require_once __DIR__ . '/../../utils/Response.php';
 try {
     $database = new Database();
     $conn = $database->getConnection();
-    
+
+    if (!$conn) {
+        Response::serverError('Database connection failed');
+        exit();
+    }
+
     // Build query with optional filters
     $where = [];
     $params = [];
@@ -88,11 +93,18 @@ try {
         LIMIT ? OFFSET ?
     ";
     
-    $params[] = $limit;
-    $params[] = $offset;
-    
     $stmt = $conn->prepare($sql);
-    $stmt->execute($params);
+
+    // Bind all parameters except LIMIT and OFFSET
+    for ($i = 0; $i < count($params); $i++) {
+        $stmt->bindValue($i + 1, $params[$i]);
+    }
+
+    // Bind LIMIT and OFFSET as integers
+    $stmt->bindValue(count($params) + 1, $limit, PDO::PARAM_INT);
+    $stmt->bindValue(count($params) + 2, $offset, PDO::PARAM_INT);
+
+    $stmt->execute();
     $events = $stmt->fetchAll();
     
     // Parse distances JSON for each event
@@ -111,5 +123,9 @@ try {
     ]);
     
 } catch (PDOException $e) {
-    Response::serverError('Failed to fetch events');
+    if (APP_ENV === 'development') {
+        Response::serverError('Failed to fetch events: ' . $e->getMessage());
+    } else {
+        Response::serverError('Failed to fetch events');
+    }
 }
