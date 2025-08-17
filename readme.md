@@ -1,4 +1,4 @@
-# 🏃‍♂️ Running Events Management System
+# 🏃‍♂️ Runnio - Running Events Management System
 
 A comprehensive web application for managing running events, user registrations, and race results. Built with PHP backend and React frontend.
 
