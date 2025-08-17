@@ -18,11 +18,16 @@ $path = str_replace('/backend', '', $path); // Remove backend prefix if present
 // Route the request
 try {
     switch (true) {
+        // Health check endpoint
+        case $path === '/api/health' && $method === 'GET':
+            require_once __DIR__ . '/api/health.php';
+            break;
+
         // Authentication routes
         case $path === '/api/register' && $method === 'POST':
             require_once __DIR__ . '/api/auth/register.php';
             break;
-            
+
         case $path === '/api/login' && $method === 'POST':
             require_once __DIR__ . '/api/auth/login.php';
             break;
@@ -78,7 +83,13 @@ try {
             break;
             
         default:
-            Response::notFound('Endpoint not found');
+            // Check if this is an API route that doesn't exist
+            if (strpos($path, '/api/') === 0) {
+                Response::notFound('Endpoint not found');
+            } else {
+                // Serve the web UI for non-API routes
+                require_once __DIR__ . '/ui/index.php';
+            }
     }
 } catch (Exception $e) {
     if (APP_ENV === 'development') {
