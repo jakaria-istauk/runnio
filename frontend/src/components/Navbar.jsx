@@ -31,7 +31,7 @@ const Navbar = () => {
             textDecoration: 'none'
           }}
         >
-          🏃‍♂️ Running Events
+          🏃‍♂️ Runnio
         </Link>
 
         <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
