@@ -345,107 +345,376 @@ POST /api/login
 
 </details>
 
-🗄 Database Schema
-1. users
+### 🗄️ **Database Schema**
+
+<div align="center">
+
+*Optimized relational database design with proper indexing and foreign key constraints*
+
+</div>
+
+<details>
+<summary><b>👥 Users Table</b></summary>
+
+```sql
 CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
-    password VARCHAR(255) NOT NULL,  -- hashed
+    password VARCHAR(255) NOT NULL,  -- Hashed with bcrypt
     role ENUM('admin', 'user') DEFAULT 'user',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
-2. events
+-- Indexes for performance
+CREATE INDEX idx_users_email ON users(email);
+CREATE INDEX idx_users_role ON users(role);
+```
+
+**Purpose**: User authentication and role management
+**Key Features**: Secure password hashing, role-based access control
+
+</details>
+
+<details>
+<summary><b>🏃‍♂️ Events Table</b></summary>
+
+```sql
 CREATE TABLE events (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     description TEXT,
     type ENUM('virtual', 'onsite') NOT NULL,
     location VARCHAR(255) DEFAULT NULL,
-    distances VARCHAR(255),
+    distances VARCHAR(255),  -- JSON array of available distances
+    event_date DATETIME NOT NULL,
+    created_by INT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     registration_deadline DATE,
-    submission_deadline DATE
+    submission_deadline DATE,  -- For virtual events only
+    FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE CASCADE
 );
 
-3. event_meta
+-- Indexes for performance
+CREATE INDEX idx_events_type ON events(type);
+CREATE INDEX idx_events_date ON events(event_date);
+CREATE INDEX idx_events_registration_deadline ON events(registration_deadline);
+CREATE INDEX idx_events_created_by ON events(created_by);
+```
+
+**Purpose**: Core event information and scheduling
+**Key Features**: Flexible distance options, deadline management, creator tracking
+
+</details>
+
+<details>
+<summary><b>🏷️ Event Meta Table</b></summary>
+
+```sql
 CREATE TABLE event_meta (
     id INT AUTO_INCREMENT PRIMARY KEY,
     event_id INT NOT NULL,
-    meta_key VARCHAR(100),
+    meta_key VARCHAR(100) NOT NULL,
     meta_value TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE
 );
 
-4. registrations
+-- Indexes for performance
+CREATE INDEX idx_event_meta_event_id ON event_meta(event_id);
+CREATE INDEX idx_event_meta_key ON event_meta(meta_key);
+CREATE INDEX idx_event_meta_event_key ON event_meta(event_id, meta_key);
+```
+
+**Purpose**: Flexible event metadata (WordPress-style)
+**Key Features**: Entry fees, difficulty levels, participant limits, custom properties
+
+</details>
+
+<details>
+<summary><b>📝 Registrations Table</b></summary>
+
+```sql
 CREATE TABLE registrations (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
     event_id INT NOT NULL,
+    distance VARCHAR(50),  -- Selected distance for this registration
+    status ENUM('registered', 'completed', 'cancelled') DEFAULT 'registered',
     registered_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE
+    FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE,
+    UNIQUE KEY unique_user_event (user_id, event_id)  -- Prevent duplicate registrations
 );
 
-5. user_logs
+-- Indexes for performance
+CREATE INDEX idx_registrations_user_id ON registrations(user_id);
+CREATE INDEX idx_registrations_event_id ON registrations(event_id);
+CREATE INDEX idx_registrations_status ON registrations(status);
+```
+
+**Purpose**: User-event relationship management
+**Key Features**: Distance selection, status tracking, duplicate prevention
+
+</details>
+
+<details>
+<summary><b>📊 User Logs Table</b></summary>
+
+```sql
 CREATE TABLE user_logs (
     id INT AUTO_INCREMENT PRIMARY KEY,
     registration_id INT NOT NULL,
-    pace VARCHAR(50),
-    finish_time VARCHAR(50),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    pace VARCHAR(50),  -- e.g., "5:30 min/km"
+    finish_time VARCHAR(50),  -- e.g., "1:45:30"
+    distance_completed VARCHAR(50),  -- Actual distance completed
+    notes TEXT,  -- Additional notes from user
+    submitted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (registration_id) REFERENCES registrations(id) ON DELETE CASCADE
 );
 
-⚙️ API Endpoints
-Authentication
-Endpoint	Method	Role	Description
-/api/register	POST	All	Register new user
-/api/login	POST	All	User login (JWT/session)
-Events
-Endpoint	Method	Role	Description
-/api/events	GET	Public	List all events
-/api/events/:id	GET	Public	Get event details
-/api/events	POST	Admin	Create event
-/api/events/:id	PUT	Admin	Update event
-/api/events/:id	DELETE	Admin	Delete event
-Registrations
-Endpoint	Method	Role	Description
-/api/events/:id/register	POST	User	Register for an event
-/api/users/:id/registrations	GET	User	Get own registrations
-/api/registrations	GET	Admin	Get all registrations
-User Logs
-Endpoint	Method	Role	Description
-/api/registrations/:id/logs	GET	User/Admin	Get logs (own for user, all for admin)
-/api/registrations/:id/logs	POST	User/Admin	Add log (own for user, all for admin)
-🔒 Role-Based Access Control
+-- Indexes for performance
+CREATE INDEX idx_user_logs_registration_id ON user_logs(registration_id);
+CREATE INDEX idx_user_logs_submitted_at ON user_logs(submitted_at);
+```
 
-Admin
+**Purpose**: Race results and performance tracking
+**Key Features**: Pace calculation, completion tracking, personal notes
 
-Full control of events (create, edit, delete)
+</details>
 
-View/manage all registrations
+### ⚙️ **API Endpoints Reference**
 
-View/manage all logs
+<div align="center">
 
-User
+*Complete RESTful API documentation with authentication and role-based access*
 
-Browse events
+</div>
 
-Register for events
+#### 🔐 **Authentication Endpoints**
 
-Manage only their own registrations & logs
+| Method | Endpoint | Description | Access Level | Request Body |
+|--------|----------|-------------|--------------|--------------|
+| `POST` | `/api/register` | Register new user account | 🌐 Public | `name`, `email`, `password` |
+| `POST` | `/api/login` | User authentication & JWT token | 🌐 Public | `email`, `password` |
 
-🎨 Frontend Pages
+**Example Authentication Request:**
+```json
+POST /api/login
+Content-Type: application/json
 
-Home Page – Browse all events (public)
+{
+  "email": "user@example.com",
+  "password": "securepassword"
+}
+```
 
-Event Details Page – Event info + register
+**Example Authentication Response:**
+```json
+{
+  "success": true,
+  "message": "Login successful",
+  "data": {
+    "user": {
+      "id": 1,
+      "name": "John Runner",
+      "email": "user@example.com",
+      "role": "user"
+    },
+    "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..."
+  }
+}
+```
 
-User Dashboard – Own registrations & logs
+#### 🏃‍♂️ **Events Management Endpoints**
 
-Admin Dashboard – Manage events, registrations, logs
+| Method | Endpoint | Description | Access Level | Query Parameters |
+|--------|----------|-------------|--------------|------------------|
+| `GET` | `/api/events` | List all events with filtering | 🌐 Public | `type`, `location`, `search`, `date_from`, `date_to`, `page`, `limit` |
+| `GET` | `/api/events/:id` | Get detailed event information | 🌐 Public | - |
+| `POST` | `/api/events` | Create new running event | 👨‍💼 Admin Only | Event data object |
+| `PUT` | `/api/events/:id` | Update existing event | 👨‍💼 Admin Only | Updated event data |
+| `DELETE` | `/api/events/:id` | Delete event (if no registrations) | 👨‍💼 Admin Only | - |
+
+**Example Event Creation Request:**
+```json
+POST /api/events
+Authorization: Bearer {jwt_token}
+Content-Type: application/json
+
+{
+  "name": "City Marathon 2024",
+  "description": "Annual city marathon with multiple distances",
+  "type": "onsite",
+  "location": "Central Park, New York",
+  "distances": ["5km", "10km", "21km", "42km"],
+  "event_date": "2024-09-15T08:00:00",
+  "registration_deadline": "2024-09-01",
+  "metadata": {
+    "entry_fee": "50",
+    "max_participants": "5000",
+    "difficulty_level": "intermediate"
+  }
+}
+```
+
+#### 📝 **Registration Management Endpoints**
+
+| Method | Endpoint | Description | Access Level | Request Body |
+|--------|----------|-------------|--------------|--------------|
+| `POST` | `/api/events/:id/register` | Register user for specific event | 👤 User | `distance` |
+| `GET` | `/api/users/:id/registrations` | Get user's event registrations | 👤 User/👨‍💼 Admin | - |
+| `GET` | `/api/registrations` | Get all system registrations | 👨‍💼 Admin Only | `event_id`, `status`, `search`, `page`, `limit` |
+
+**Example Registration Request:**
+```json
+POST /api/events/1/register
+Authorization: Bearer {jwt_token}
+Content-Type: application/json
+
+{
+  "distance": "10km"
+}
+```
+
+#### 📊 **User Logs & Results Endpoints**
+
+| Method | Endpoint | Description | Access Level | Request Body |
+|--------|----------|-------------|--------------|--------------|
+| `GET` | `/api/registrations/:id/logs` | Get race results for registration | 👤 User/👨‍💼 Admin | - |
+| `POST` | `/api/registrations/:id/logs` | Submit race results & performance | 👤 User/👨‍💼 Admin | `finish_time`, `pace`, `distance_completed`, `notes` |
+
+**Example Results Submission:**
+```json
+POST /api/registrations/1/logs
+Authorization: Bearer {jwt_token}
+Content-Type: application/json
+
+{
+  "finish_time": "1:45:30",
+  "pace": "5:30",
+  "distance_completed": "10km",
+  "notes": "Great race! Perfect weather conditions."
+}
+```
+### 🔒 **Role-Based Access Control**
+
+<div align="center">
+
+*Comprehensive permission system ensuring secure and appropriate access levels*
+
+</div>
+
+<table>
+<tr>
+<td width="50%">
+
+#### 👨‍💼 **Admin Privileges**
+
+- ✅ **Event Management**
+  - Create new running events
+  - Edit existing event details
+  - Delete events (if no registrations)
+  - Manage event metadata & settings
+
+- ✅ **User Oversight**
+  - View all user registrations
+  - Monitor registration statistics
+  - Access user performance logs
+  - Manage user accounts
+
+- ✅ **System Administration**
+  - Access comprehensive analytics
+  - Export registration data
+  - Configure system settings
+  - Monitor platform health
+
+</td>
+<td width="50%">
+
+#### 👤 **User Privileges**
+
+- ✅ **Event Participation**
+  - Browse all public events
+  - Register for upcoming events
+  - Select preferred distances
+  - Cancel own registrations
+
+- ✅ **Personal Management**
+  - View personal dashboard
+  - Track registration history
+  - Submit race results & logs
+  - Update personal information
+
+- ✅ **Performance Tracking**
+  - Record finish times & pace
+  - Add race notes & experiences
+  - View personal statistics
+  - Track improvement over time
+
+</td>
+</tr>
+</table>
+
+### 🎨 **Frontend Application Structure**
+
+<div align="center">
+
+*Modern React SPA with intuitive navigation and responsive design*
+
+</div>
+
+| Page | Route | Access Level | Key Features |
+|------|-------|--------------|--------------|
+| 🏠 **Home Page** | `/` | 🌐 Public | Event browsing, filtering, search functionality |
+| 🏃‍♂️ **Event Details** | `/events/:id` | 🌐 Public | Detailed event info, registration interface |
+| 🔐 **Login** | `/login` | 🌐 Public | User authentication, demo account access |
+| 📝 **Register** | `/register` | � Public | New user account creation |
+| 📊 **User Dashboard** | `/dashboard` | 👤 User | Personal registrations, results submission |
+| ⚙️ **Admin Panel** | `/admin` | 👨‍💼 Admin | Event management, user oversight, analytics |
+
+#### 🎯 **Page Features Overview**
+
+<details>
+<summary><b>🏠 Home Page Features</b></summary>
+
+- **Event Discovery**: Browse all available running events
+- **Advanced Filtering**: Filter by type, location, date, distance
+- **Real-time Search**: Search events by name and description
+- **Responsive Cards**: Mobile-friendly event display
+- **Pagination**: Efficient loading of large event lists
+- **Registration Status**: Visual indicators for open/closed registration
+
+</details>
+
+<details>
+<summary><b>🏃‍♂️ Event Details Features</b></summary>
+
+- **Comprehensive Info**: Full event details and metadata
+- **Registration Interface**: One-click registration with distance selection
+- **Participant Count**: Real-time registration statistics
+- **Location Maps**: Integration-ready location display
+- **Deadline Tracking**: Visual countdown to registration deadlines
+- **Social Sharing**: Share events with the running community
+
+</details>
+
+<details>
+<summary><b>📊 Dashboard Features</b></summary>
+
+- **Personal Statistics**: Registration counts and achievements
+- **Event Timeline**: Upcoming and past event organization
+- **Results Submission**: Easy race result logging interface
+- **Performance Tracking**: Historical data and progress visualization
+- **Quick Actions**: Fast access to common tasks
+- **Responsive Design**: Optimized for all device sizes
+
+</details>
 
 
 ---
