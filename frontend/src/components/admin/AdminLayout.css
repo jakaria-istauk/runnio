@@ -30,24 +30,16 @@
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
 }
 
-.admin-main {
-  flex: 1;
-  margin-left: var(--sidebar-width);
-  transition: margin-left 0.3s ease;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-.admin-main.sidebar-collapsed {
-  margin-left: var(--sidebar-collapsed-width);
-}
-
 .admin-content {
-  flex: 1;
-  padding: 24px;
+  margin-left: var(--sidebar-width);
   margin-top: var(--topbar-height);
-  overflow-y: auto;
+  padding: 24px;
+  min-height: calc(100vh - var(--topbar-height));
+  transition: margin-left 0.3s ease;
+}
+
+.admin-layout.sidebar-collapsed .admin-content {
+  margin-left: var(--sidebar-collapsed-width);
 }
 
 /* Sidebar Styles */
@@ -206,7 +198,7 @@
   box-shadow: var(--shadow-sm);
 }
 
-.admin-main.sidebar-collapsed .admin-topbar {
+.admin-layout.sidebar-collapsed .admin-topbar {
   left: var(--sidebar-collapsed-width);
 }
 

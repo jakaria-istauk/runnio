@@ -32,6 +32,48 @@ const UserManagement = () => {
   const fetchUsers = async () => {
     try {
       setLoading(true)
+
+      // Mock data for testing - replace with actual API call when backend is available
+      const mockUsers = [
+        {
+          id: 1,
+          name: 'John Doe',
+          email: 'john@example.com',
+          role: 'admin',
+          registrations_count: 5,
+          created_at: '2024-01-15T10:30:00Z',
+          updated_at: '2024-01-20T14:45:00Z'
+        },
+        {
+          id: 2,
+          name: 'Jane Smith',
+          email: 'jane@example.com',
+          role: 'user',
+          registrations_count: 3,
+          created_at: '2024-02-01T09:15:00Z',
+          updated_at: '2024-02-01T09:15:00Z'
+        },
+        {
+          id: 3,
+          name: 'Mike Johnson',
+          email: 'mike@example.com',
+          role: 'user',
+          registrations_count: 8,
+          created_at: '2024-01-10T16:20:00Z',
+          updated_at: '2024-01-25T11:30:00Z'
+        }
+      ]
+
+      setUsers(mockUsers)
+      setPagination({
+        current_page: 1,
+        total_pages: 1,
+        total: mockUsers.length,
+        per_page: 20
+      })
+
+      // Uncomment when backend is available:
+      /*
       const params = new URLSearchParams({
         ...filters,
         ...Object.fromEntries(Object.entries(filters).filter(([_, v]) => v))
@@ -40,6 +82,7 @@ const UserManagement = () => {
       const response = await api.get(`/users?${params}`)
       setUsers(response.data.data.users)
       setPagination(response.data.data.pagination)
+      */
     } catch (err) {
       setError('Failed to load users')
       console.error('Error fetching users:', err)

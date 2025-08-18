@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, useLocation } from 'react-router-dom'
 import Navbar from './components/Navbar'
 import HomePage from './pages/HomePage'
 import EventDetailPage from './pages/EventDetailPage'
@@ -11,10 +11,13 @@ import EventManagement from './pages/admin/EventManagement'
 import RegistrationManagement from './pages/admin/RegistrationManagement'
 import ProtectedRoute from './components/ProtectedRoute'
 
-function App() {
+function AppContent() {
+  const location = useLocation()
+  const isAdminRoute = location.pathname.startsWith('/admin')
+
   return (
     <div className="App">
-      <Navbar />
+      {!isAdminRoute && <Navbar />}
       <main>
         <Routes>
           <Route path="/" element={<HomePage />} />
@@ -66,6 +69,10 @@ function App() {
       </main>
     </div>
   )
+}
+
+function App() {
+  return <AppContent />
 }
 
 export default App

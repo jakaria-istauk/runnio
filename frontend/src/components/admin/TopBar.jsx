@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
 
-const TopBar = ({ user, breadcrumbs, onToggleSidebar }) => {
+const TopBar = ({ user, breadcrumbs, onToggleSidebar, sidebarCollapsed }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const dropdownRef = useRef(null)
   const navigate = useNavigate()
@@ -29,7 +29,7 @@ const TopBar = ({ user, breadcrumbs, onToggleSidebar }) => {
   }
 
   return (
-    <header className="admin-topbar">
+    <header className={`admin-topbar ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
       <div className="topbar-left">
         <button 
           className="mobile-menu-toggle"

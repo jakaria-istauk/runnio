@@ -13,24 +13,23 @@ const AdminLayout = ({ children, currentPage, breadcrumbs }) => {
   }
 
   return (
-    <div className="admin-layout">
-      <Sidebar 
-        collapsed={sidebarCollapsed} 
+    <div className={`admin-layout ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
+      <Sidebar
+        collapsed={sidebarCollapsed}
         onToggle={toggleSidebar}
         currentPage={currentPage}
       />
-      
-      <div className={`admin-main ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
-        <TopBar 
-          user={user}
-          breadcrumbs={breadcrumbs}
-          onToggleSidebar={toggleSidebar}
-        />
-        
-        <main className="admin-content">
-          {children}
-        </main>
-      </div>
+
+      <TopBar
+        user={user}
+        breadcrumbs={breadcrumbs}
+        onToggleSidebar={toggleSidebar}
+        sidebarCollapsed={sidebarCollapsed}
+      />
+
+      <main className="admin-content">
+        {children}
+      </main>
     </div>
   )
 }

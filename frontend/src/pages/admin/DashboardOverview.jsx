@@ -21,25 +21,52 @@ const DashboardOverview = () => {
   const fetchDashboardData = async () => {
     try {
       setLoading(true)
-      
-      // Fetch stats from multiple endpoints
+
+      // For now, use mock data to test the interface
+      // TODO: Replace with actual API calls when backend is available
+      setStats({
+        totalEvents: 12,
+        totalUsers: 156,
+        totalRegistrations: 89,
+        activeEvents: 5
+      })
+
+      setRecentActivity([
+        {
+          id: 1,
+          user_name: 'John Doe',
+          event_name: 'City Marathon 2024',
+          distance: '42km',
+          registered_at: new Date().toISOString()
+        },
+        {
+          id: 2,
+          user_name: 'Jane Smith',
+          event_name: 'Park Run',
+          distance: '5km',
+          registered_at: new Date(Date.now() - 86400000).toISOString()
+        }
+      ])
+
+      // Uncomment when backend is available:
+      /*
       const [eventsRes, usersRes, registrationsRes] = await Promise.all([
         api.get('/events?limit=1'),
         api.get('/users?limit=1'),
         api.get('/registrations?limit=1')
       ])
-      
-      // Get recent registrations for activity feed
+
       const recentRes = await api.get('/registrations?limit=5')
-      
+
       setStats({
         totalEvents: eventsRes.data.data.pagination.total,
         totalUsers: usersRes.data.data.pagination.total,
         totalRegistrations: registrationsRes.data.data.pagination.total,
         activeEvents: eventsRes.data.data.events?.filter(e => new Date(e.event_date) > new Date()).length || 0
       })
-      
+
       setRecentActivity(recentRes.data.data.registrations || [])
+      */
     } catch (err) {
       console.error('Failed to fetch dashboard data:', err)
     } finally {
