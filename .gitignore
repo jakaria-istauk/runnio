@@ -3,3 +3,4 @@ test*
 *.env
 *-lock.*
 node_modules
+dist

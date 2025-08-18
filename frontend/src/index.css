@@ -72,7 +72,7 @@
   .form-group input,
   .form-group select,
   .form-group textarea {
-    @apply px-4 py-3 border border-gray-300 rounded-lg text-sm bg-white text-gray-900 transition-all duration-200 ease-in-out font-inherit leading-normal;
+    @apply px-4 py-3 border border-gray-300 rounded-lg text-sm bg-white text-gray-900 transition-all duration-200 ease-in-out font-sans leading-normal;
   }
 
   .form-group input:focus,
@@ -300,18 +300,18 @@
 
   /* Gradient utilities */
   .gradient-primary {
-    background: linear-gradient(135deg, theme('colors.primary.500'), theme('colors.primary.600'));
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
   }
 
   .gradient-success {
-    background: linear-gradient(135deg, theme('colors.green.500'), theme('colors.green.600'));
+    background: linear-gradient(135deg, #10b981, #059669);
   }
 
   .gradient-warning {
-    background: linear-gradient(135deg, theme('colors.yellow.500'), theme('colors.yellow.600'));
+    background: linear-gradient(135deg, #f59e0b, #d97706);
   }
 
   .gradient-danger {
-    background: linear-gradient(135deg, theme('colors.red.500'), theme('colors.red.600'));
+    background: linear-gradient(135deg, #ef4444, #dc2626);
   }
 }
