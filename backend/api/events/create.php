@@ -62,6 +62,7 @@ try {
     $eventData = [
         'name' => $input['name'],
         'description' => $input['description'],
+        'cover_image' => $input['cover_image'] ?? null,
         'type' => $input['type'],
         'location' => $input['type'] === 'onsite' ? $input['location'] : null,
         'distances' => json_encode($input['distances']),
@@ -70,13 +71,13 @@ try {
         'registration_deadline' => $input['registration_deadline'],
         'submission_deadline' => $input['submission_deadline'] ?? null
     ];
-    
+
     // Insert event
     $stmt = $conn->prepare("
         INSERT INTO events (
-            name, description, type, location, distances, 
+            name, description, cover_image, type, location, distances,
             event_date, created_by, registration_deadline, submission_deadline
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ");
     
     $stmt->execute(array_values($eventData));
@@ -96,8 +97,8 @@ try {
     
     // Fetch the created event
     $stmt = $conn->prepare("
-        SELECT 
-            e.id, e.name, e.description, e.type, e.location, e.distances,
+        SELECT
+            e.id, e.name, e.description, e.cover_image, e.type, e.location, e.distances,
             e.event_date, e.registration_deadline, e.submission_deadline,
             e.created_at, u.name as created_by_name
         FROM events e

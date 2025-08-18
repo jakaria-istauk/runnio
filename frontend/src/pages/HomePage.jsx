@@ -57,131 +57,137 @@ const HomePage = () => {
   }
 
   if (loading && events.length === 0) {
-    return <div className="loading">Loading events...</div>
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="loading">
+          <div className="loading-spinner"></div>
+          Loading events...
+        </div>
+      </div>
+    )
   }
 
   return (
-    <div className="container">
-      <div style={{ marginBottom: '2rem' }}>
-        <h1 style={{ marginBottom: '1rem' }}>Running Events</h1>
-        <p style={{ color: '#666', fontSize: '1.1rem' }}>
-          Discover and register for exciting running events in your area
-        </p>
-      </div>
-
-      {/* Filters */}
-      <div className="card" style={{ marginBottom: '2rem' }}>
-        <h3 style={{ marginBottom: '1rem' }}>Filter Events</h3>
-        <div style={{ 
-          display: 'grid', 
-          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
-          gap: '1rem' 
-        }}>
-          <div className="form-group">
-            <label>Search</label>
-            <input
-              type="text"
-              placeholder="Search events..."
-              value={filters.search}
-              onChange={(e) => handleFilterChange('search', e.target.value)}
-            />
-          </div>
-          
-          <div className="form-group">
-            <label>Event Type</label>
-            <select
-              value={filters.type}
-              onChange={(e) => handleFilterChange('type', e.target.value)}
-            >
-              <option value="">All Types</option>
-              <option value="virtual">Virtual</option>
-              <option value="onsite">On-site</option>
-            </select>
-          </div>
-          
-          <div className="form-group">
-            <label>Location</label>
-            <input
-              type="text"
-              placeholder="Enter location..."
-              value={filters.location}
-              onChange={(e) => handleFilterChange('location', e.target.value)}
-            />
-          </div>
-          
-          <div className="form-group">
-            <label>From Date</label>
-            <input
-              type="date"
-              value={filters.date_from}
-              onChange={(e) => handleFilterChange('date_from', e.target.value)}
-            />
-          </div>
-          
-          <div className="form-group">
-            <label>To Date</label>
-            <input
-              type="date"
-              value={filters.date_to}
-              onChange={(e) => handleFilterChange('date_to', e.target.value)}
-            />
+    <div className="min-h-screen bg-gray-50">
+      <div className="container py-8">
+        <div className="page-header">
+          <div className="header-content">
+            <h1>Running Events</h1>
+            <p>Discover and register for exciting running events in your area</p>
           </div>
         </div>
-      </div>
 
-      {error && (
-        <div className="alert alert-error">{error}</div>
-      )}
+        {/* Filters */}
+        <div className="card mb-8">
+          <h3 className="text-lg font-semibold text-gray-900 mb-6">Filter Events</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="form-group">
+              <label className="form-label">Search</label>
+              <input
+                type="text"
+                className="form-input"
+                placeholder="Search events..."
+                value={filters.search}
+                onChange={(e) => handleFilterChange('search', e.target.value)}
+              />
+            </div>
 
-      {/* Events List */}
-      <div style={{ marginBottom: '2rem' }}>
-        {events.length === 0 ? (
-          <div className="card" style={{ textAlign: 'center', padding: '3rem' }}>
-            <h3>No events found</h3>
-            <p style={{ color: '#666' }}>Try adjusting your filters to see more events.</p>
+            <div className="form-group">
+              <label className="form-label">Event Type</label>
+              <select
+                className="form-input"
+                value={filters.type}
+                onChange={(e) => handleFilterChange('type', e.target.value)}
+              >
+                <option value="">All Types</option>
+                <option value="virtual">Virtual</option>
+                <option value="onsite">On-site</option>
+              </select>
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Location</label>
+              <input
+                type="text"
+                className="form-input"
+                placeholder="Enter location..."
+                value={filters.location}
+                onChange={(e) => handleFilterChange('location', e.target.value)}
+              />
+            </div>
+
+            <div className="form-group lg:col-span-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="form-label">From Date</label>
+                  <input
+                    type="date"
+                    className="form-input"
+                    value={filters.date_from}
+                    onChange={(e) => handleFilterChange('date_from', e.target.value)}
+                  />
+                </div>
+
+                <div>
+                  <label className="form-label">To Date</label>
+                  <input
+                    type="date"
+                    className="form-input"
+                    value={filters.date_to}
+                    onChange={(e) => handleFilterChange('date_to', e.target.value)}
+                  />
+                </div>
+              </div>
+            </div>
           </div>
-        ) : (
-          <div style={{ display: 'grid', gap: '1rem' }}>
-            {events.map(event => (
-              <EventCard key={event.id} event={event} />
-            ))}
+        </div>
+
+        {error && (
+          <div className="alert alert-error mb-6">{error}</div>
+        )}
+
+        {/* Events List */}
+        <div className="mb-8">
+          {events.length === 0 ? (
+            <div className="card text-center py-12">
+              <div className="text-gray-400 text-6xl mb-4">🏃‍♂️</div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">No events found</h3>
+              <p className="text-gray-600">Try adjusting your filters to see more events.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {events.map(event => (
+                <EventCard key={event.id} event={event} />
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Pagination */}
+        {pagination.pages > 1 && (
+          <div className="flex justify-center items-center gap-3 mb-8">
+            <button
+              className="btn btn-secondary"
+              disabled={pagination.page === 1}
+              onClick={() => handlePageChange(pagination.page - 1)}
+            >
+              Previous
+            </button>
+
+            <div className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-medium">
+              Page {pagination.page} of {pagination.pages}
+            </div>
+
+            <button
+              className="btn btn-secondary"
+              disabled={pagination.page === pagination.pages}
+              onClick={() => handlePageChange(pagination.page + 1)}
+            >
+              Next
+            </button>
           </div>
         )}
       </div>
-
-      {/* Pagination */}
-      {pagination.pages > 1 && (
-        <div style={{ 
-          display: 'flex', 
-          justifyContent: 'center', 
-          gap: '0.5rem',
-          marginBottom: '2rem'
-        }}>
-          <button
-            className="btn btn-secondary"
-            disabled={pagination.page === 1}
-            onClick={() => handlePageChange(pagination.page - 1)}
-          >
-            Previous
-          </button>
-          
-          <span style={{ 
-            padding: '10px 15px', 
-            background: '#f8f9fa', 
-            borderRadius: '5px' 
-          }}>
-            Page {pagination.page} of {pagination.pages}
-          </span>
-          
-          <button
-            className="btn btn-secondary"
-            disabled={pagination.page === pagination.pages}
-            onClick={() => handlePageChange(pagination.page + 1)}
-          >
-            Next
-          </button>
-        </div>
-      )}
     </div>
   )
 }
@@ -189,70 +195,96 @@ const HomePage = () => {
 const EventCard = ({ event }) => {
   const upcoming = isEventUpcoming(event.event_date)
   const registrationOpen = isRegistrationOpen(event.registration_deadline)
+  const isRegistered = event.is_registered === 1
+
+  // Default cover image if none provided
+  const coverImage = event.cover_image || `https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=200&fit=crop&auto=format`
 
   return (
-    <div className="card">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-        <div style={{ flex: 1 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '0.5rem' }}>
-            <h3 style={{ margin: 0 }}>
-              <Link
-                to={`/events/${event.id}`}
-                style={{ color: '#007bff', textDecoration: 'none' }}
-              >
-                {event.name}
-              </Link>
-            </h3>
-            <span style={{
-              padding: '2px 8px',
-              borderRadius: '12px',
-              fontSize: '12px',
-              fontWeight: 'bold',
-              background: event.type === 'virtual' ? '#e3f2fd' : '#f3e5f5',
-              color: event.type === 'virtual' ? '#1976d2' : '#7b1fa2'
-            }}>
-              {event.type === 'virtual' ? '💻 Virtual' : '📍 On-site'}
+    <div className="event-card group">
+      {/* Cover Image */}
+      <div className="relative overflow-hidden">
+        <img
+          src={coverImage}
+          alt={event.name}
+          className="event-card-image group-hover:scale-105 transition-transform duration-300"
+          onError={(e) => {
+            e.target.src = `https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=200&fit=crop&auto=format`
+          }}
+        />
+
+        {/* Badges Overlay */}
+        <div className="absolute top-4 left-4 flex flex-wrap gap-2">
+          <span className={`event-badge ${event.type === 'virtual' ? 'event-badge-virtual' : 'event-badge-onsite'}`}>
+            {event.type === 'virtual' ? '💻 Virtual' : '📍 On-site'}
+          </span>
+
+          {isRegistered && (
+            <span className="event-badge event-badge-registered">
+              ✅ Registered
             </span>
+          )}
+        </div>
+
+        {/* Registration Status Badge */}
+        <div className="absolute top-4 right-4">
+          <span className={`event-badge ${registrationOpen ? 'event-badge-open' : 'event-badge-closed'}`}>
+            {registrationOpen ? 'Open' : 'Closed'}
+          </span>
+        </div>
+      </div>
+
+      {/* Card Content */}
+      <div className="event-card-content">
+        <div className="flex justify-between items-start mb-3">
+          <Link
+            to={`/events/${event.id}`}
+            className="event-card-title hover:text-primary-600 transition-colors"
+          >
+            {event.name}
+          </Link>
+        </div>
+
+        <p className="event-card-description">
+          {event.description}
+        </p>
+
+        <div className="event-card-meta">
+          <div className="event-card-meta-item">
+            <span className="text-lg">📅</span>
+            <span>{formatDateTime(event.event_date)}</span>
           </div>
 
-          <p style={{ color: '#666', marginBottom: '1rem' }}>
-            {event.description.length > 150
-              ? event.description.substring(0, 150) + '...'
-              : event.description
-            }
-          </p>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
-            <div>
-              <strong>📅 Date:</strong> {formatDateTime(event.event_date)}
+          {event.location && (
+            <div className="event-card-meta-item">
+              <span className="text-lg">📍</span>
+              <span className="truncate">{event.location}</span>
             </div>
+          )}
 
-            {event.location && (
-              <div>
-                <strong>📍 Location:</strong> {event.location}
-              </div>
-            )}
+          <div className="event-card-meta-item">
+            <span className="text-lg">🏃‍♂️</span>
+            <span>{event.distances.join(', ')}</span>
+          </div>
 
-            <div>
-              <strong>🏃‍♂️ Distances:</strong> {event.distances.join(', ')}
-            </div>
-
-            <div>
-              <strong>📝 Registration:</strong> {
-                registrationOpen
-                  ? `Open until ${formatDate(event.registration_deadline)}`
-                  : 'Closed'
+          <div className="event-card-meta-item">
+            <span className="text-lg">📝</span>
+            <span className="truncate">
+              {registrationOpen
+                ? `Until ${formatDate(event.registration_deadline)}`
+                : 'Registration Closed'
               }
-            </div>
+            </span>
           </div>
         </div>
 
-        <div style={{ marginLeft: '1rem' }}>
+        {/* Action Button */}
+        <div className="mt-6 pt-4 border-t border-gray-100">
           <Link
             to={`/events/${event.id}`}
-            className="btn"
+            className="btn btn-primary w-full justify-center"
           >
-            View Details
+            {isRegistered ? 'View Details' : 'Learn More'}
           </Link>
         </div>
       </div>

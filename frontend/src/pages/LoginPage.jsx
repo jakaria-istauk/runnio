@@ -104,159 +104,171 @@ const LoginPage = () => {
   }
 
   return (
-    <div className="container" style={{ maxWidth: '400px', margin: '2rem auto' }}>
-      <div className="card">
-        {/* Tab Navigation */}
-        <div style={{
-          display: 'flex',
-          marginBottom: '2rem',
-          borderBottom: '1px solid #e0e0e0'
-        }}>
-          <button
-            type="button"
-            onClick={() => setIsLogin(true)}
-            style={{
-              flex: 1,
-              padding: '1rem',
-              border: 'none',
-              background: 'none',
-              borderBottom: isLogin ? '2px solid #007bff' : 'none',
-              color: isLogin ? '#007bff' : '#666',
-              fontWeight: isLogin ? 'bold' : 'normal',
-              cursor: 'pointer'
-            }}
-          >
-            Login
-          </button>
-          <button
-            type="button"
-            onClick={() => setIsLogin(false)}
-            style={{
-              flex: 1,
-              padding: '1rem',
-              border: 'none',
-              background: 'none',
-              borderBottom: !isLogin ? '2px solid #007bff' : 'none',
-              color: !isLogin ? '#007bff' : '#666',
-              fontWeight: !isLogin ? 'bold' : 'normal',
-              cursor: 'pointer'
-            }}
-          >
-            Register
-          </button>
-        </div>
-
-        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-          <h2>{isLogin ? 'Login' : 'Create Account'}</h2>
-          <p style={{ color: '#666' }}>
-            {isLogin
-              ? 'Welcome back! Please sign in to your account.'
-              : 'Join our running community and start registering for events!'
-            }
-          </p>
-        </div>
-
-        {error && (
-          <div className="alert alert-error" style={{ marginBottom: '1rem' }}>
-            {error}
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8">
+        <div className="bg-white rounded-xl shadow-soft p-8">
+          {/* Header */}
+          <div className="text-center mb-8">
+            <div className="w-16 h-16 bg-primary-600 rounded-xl flex items-center justify-center mx-auto mb-4">
+              <span className="text-white text-2xl">🏃‍♂️</span>
+            </div>
+            <h2 className="text-3xl font-bold text-gray-900">
+              {isLogin ? 'Welcome back' : 'Join Runnio'}
+            </h2>
+            <p className="mt-2 text-gray-600">
+              {isLogin
+                ? 'Sign in to your account to continue'
+                : 'Create your account and start your running journey'
+              }
+            </p>
           </div>
-        )}
 
-        {errors.length > 0 && (
-          <div className="alert alert-error" style={{ marginBottom: '1rem' }}>
-            <ul style={{ margin: 0, paddingLeft: '1.2rem' }}>
-              {errors.map((err, index) => (
-                <li key={index}>{err}</li>
-              ))}
-            </ul>
+          {/* Tab Navigation */}
+          <div className="flex mb-8 bg-gray-100 rounded-lg p-1">
+            <button
+              type="button"
+              onClick={() => setIsLogin(true)}
+              className={`flex-1 py-2 px-4 text-sm font-medium rounded-md transition-all duration-200 ${
+                isLogin
+                  ? 'bg-white text-primary-600 shadow-sm'
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              Sign In
+            </button>
+            <button
+              type="button"
+              onClick={() => setIsLogin(false)}
+              className={`flex-1 py-2 px-4 text-sm font-medium rounded-md transition-all duration-200 ${
+                !isLogin
+                  ? 'bg-white text-primary-600 shadow-sm'
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              Sign Up
+            </button>
           </div>
-        )}
 
-        <form onSubmit={handleSubmit}>
-          {!isLogin && (
-            <div className="form-group">
-              <label htmlFor="name">Full Name</label>
-              <input
-                type="text"
-                id="name"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                required={!isLogin}
-                placeholder="Enter your full name"
-              />
+          {/* Error Messages */}
+          {error && (
+            <div className="alert alert-error mb-6">
+              {error}
             </div>
           )}
 
-          <div className="form-group">
-            <label htmlFor="email">Email Address</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-              placeholder="Enter your email"
-            />
-          </div>
+          {errors.length > 0 && (
+            <div className="alert alert-error mb-6">
+              <ul className="m-0 pl-5">
+                {errors.map((err, index) => (
+                  <li key={index}>{err}</li>
+                ))}
+              </ul>
+            </div>
+          )}
 
-          <div className="form-group">
-            <label htmlFor="password">Password</label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              required
-              placeholder={isLogin ? "Enter your password" : "Enter your password (min 6 characters)"}
-            />
-          </div>
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {!isLogin && (
+              <div>
+                <label htmlFor="name" className="form-label">
+                  Full Name
+                </label>
+                <input
+                  type="text"
+                  id="name"
+                  name="name"
+                  className="form-input"
+                  value={formData.name}
+                  onChange={handleChange}
+                  required={!isLogin}
+                  placeholder="Enter your full name"
+                />
+              </div>
+            )}
 
-          {!isLogin && (
-            <div className="form-group">
-              <label htmlFor="confirmPassword">Confirm Password</label>
+            <div>
+              <label htmlFor="email" className="form-label">
+                Email Address
+              </label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                className="form-input"
+                value={formData.email}
+                onChange={handleChange}
+                required
+                placeholder="Enter your email address"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="password" className="form-label">
+                Password
+              </label>
               <input
                 type="password"
-                id="confirmPassword"
-                name="confirmPassword"
-                value={formData.confirmPassword}
+                id="password"
+                name="password"
+                className="form-input"
+                value={formData.password}
                 onChange={handleChange}
-                required={!isLogin}
-                placeholder="Confirm your password"
+                required
+                placeholder={isLogin ? "Enter your password" : "Create a password (min 6 characters)"}
               />
             </div>
-          )}
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="btn"
-            style={{ width: '100%', marginBottom: '1rem' }}
-          >
-            {loading
-              ? (isLogin ? 'Signing in...' : 'Creating Account...')
-              : (isLogin ? 'Sign In' : 'Create Account')
-            }
-          </button>
-        </form>
+            {!isLogin && (
+              <div>
+                <label htmlFor="confirmPassword" className="form-label">
+                  Confirm Password
+                </label>
+                <input
+                  type="password"
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  className="form-input"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  required={!isLogin}
+                  placeholder="Confirm your password"
+                />
+              </div>
+            )}
 
-        {isLogin && (
-          <div style={{
-            marginTop: '2rem',
-            padding: '1rem',
-            background: '#f8f9fa',
-            borderRadius: '4px',
-            fontSize: '14px'
-          }}>
-            <strong>Demo Accounts:</strong>
-            <div style={{ marginTop: '0.5rem' }}>
-              <div>Admin: admin@runningevents.com / admin123</div>
-              <div>User: john@example.com / user123</div>
+            <button
+              type="submit"
+              disabled={loading}
+              className="btn btn-primary w-full justify-center"
+            >
+              {loading ? (
+                <div className="flex items-center gap-2">
+                  <div className="loading-spinner w-4 h-4"></div>
+                  {isLogin ? 'Signing in...' : 'Creating Account...'}
+                </div>
+              ) : (
+                isLogin ? 'Sign In' : 'Create Account'
+              )}
+            </button>
+          </form>
+
+          {/* Demo Accounts */}
+          {isLogin && (
+            <div className="mt-8 p-4 bg-gray-50 rounded-lg">
+              <h4 className="text-sm font-semibold text-gray-900 mb-3">Demo Accounts</h4>
+              <div className="space-y-2 text-sm text-gray-600">
+                <div className="flex justify-between">
+                  <span>Admin:</span>
+                  <span className="font-mono">admin@runningevents.com / admin123</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>User:</span>
+                  <span className="font-mono">john@example.com / user123</span>
+                </div>
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   )

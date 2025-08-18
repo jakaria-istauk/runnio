@@ -72,12 +72,26 @@ try {
     $stmt->execute($params);
     $total = $stmt->fetch()['total'];
     
-    // Get events with creator info
+    // Get current user ID for registration status
+    $currentUserId = null;
+    $authHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
+    if (preg_match('/Bearer\s+(.*)$/i', $authHeader, $matches)) {
+        try {
+            require_once __DIR__ . '/../../utils/JWT.php';
+            $decoded = JWT::decode($matches[1]);
+            $currentUserId = $decoded['id'] ?? null;
+        } catch (Exception $e) {
+            // Token invalid or expired, continue without user context
+        }
+    }
+
+    // Get events with creator info and user registration status
     $sql = "
-        SELECT 
+        SELECT
             e.id,
             e.name,
             e.description,
+            e.cover_image,
             e.type,
             e.location,
             e.distances,
@@ -85,9 +99,19 @@ try {
             e.registration_deadline,
             e.submission_deadline,
             e.created_at,
-            u.name as created_by_name
+            u.name as created_by_name,
+            " . ($currentUserId ? "
+            CASE WHEN r.id IS NOT NULL THEN 1 ELSE 0 END as is_registered,
+            r.distance as registered_distance,
+            r.status as registration_status
+            " : "
+            0 as is_registered,
+            NULL as registered_distance,
+            NULL as registration_status
+            ") . "
         FROM events e
         LEFT JOIN users u ON e.created_by = u.id
+        " . ($currentUserId ? "LEFT JOIN registrations r ON e.id = r.event_id AND r.user_id = $currentUserId" : "") . "
         $whereClause
         ORDER BY e.event_date ASC
         LIMIT ? OFFSET ?

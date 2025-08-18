@@ -21,10 +21,11 @@ try {
     
     // Get event with creator info
     $stmt = $conn->prepare("
-        SELECT 
+        SELECT
             e.id,
             e.name,
             e.description,
+            e.cover_image,
             e.type,
             e.location,
             e.distances,

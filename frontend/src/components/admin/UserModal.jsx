@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
 import api from '../../utils/api'
-import './UserModal.css'
 
 const UserModal = ({ user, mode, onSave, onClose }) => {
   const [formData, setFormData] = useState({
@@ -123,101 +122,111 @@ const UserModal = ({ user, mode, onSave, onClose }) => {
   }
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-header">
-          <h2>{getModalTitle()}</h2>
-          <button className="modal-close" onClick={onClose}>✕</button>
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50" onClick={onClose}>
+      <div className="bg-white rounded-xl shadow-large max-w-md w-full max-h-[90vh] overflow-hidden" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center justify-between p-6 border-b border-gray-200">
+          <h2 className="text-xl font-semibold text-gray-900">{getModalTitle()}</h2>
+          <button
+            className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+            onClick={onClose}
+          >
+            ✕
+          </button>
         </div>
 
-        <div className="modal-body">
+        <div className="p-6 overflow-y-auto">
           {mode === 'view' ? (
-            <div className="user-details-view">
-              <div className="detail-group">
-                <label>Name</label>
-                <p>{user.name}</p>
+            <div className="space-y-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                <p className="text-gray-900">{user.name}</p>
               </div>
-              
-              <div className="detail-group">
-                <label>Email</label>
-                <p>{user.email}</p>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                <p className="text-gray-900">{user.email}</p>
               </div>
-              
-              <div className="detail-group">
-                <label>Role</label>
-                <p className={`role-badge ${user.role === 'admin' ? 'badge-admin' : 'badge-user'}`}>
-                  {user.role === 'admin' ? '👨‍💼' : '👤'} {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
-                </p>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
+                <span className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium ${
+                  user.role === 'admin'
+                    ? 'bg-purple-100 text-purple-800'
+                    : 'bg-blue-100 text-blue-800'
+                }`}>
+                  {user.role === 'admin' ? '👨‍💼' : '👤'}
+                  {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+                </span>
               </div>
-              
-              <div className="detail-group">
-                <label>Registrations</label>
-                <p>{user.registrations_count} events</p>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Registrations</label>
+                <p className="text-gray-900">{user.registrations_count} events</p>
               </div>
-              
-              <div className="detail-group">
-                <label>Joined</label>
-                <p>{formatDate(user.created_at)}</p>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Joined</label>
+                <p className="text-gray-900">{formatDate(user.created_at)}</p>
               </div>
-              
-              <div className="detail-group">
-                <label>Last Updated</label>
-                <p>{formatDate(user.updated_at)}</p>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Last Updated</label>
+                <p className="text-gray-900">{formatDate(user.updated_at)}</p>
               </div>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} className="user-form">
+            <form onSubmit={handleSubmit} className="space-y-6">
               {errors.submit && (
-                <div className="form-error">
+                <div className="alert alert-error">
                   {errors.submit}
                 </div>
               )}
 
-              <div className="form-group">
-                <label htmlFor="name">Name *</label>
+              <div>
+                <label htmlFor="name" className="form-label">Name *</label>
                 <input
                   id="name"
                   name="name"
                   type="text"
                   value={formData.name}
                   onChange={handleChange}
-                  className={errors.name ? 'error' : ''}
+                  className={`form-input ${errors.name ? 'form-input-error' : ''}`}
                   placeholder="Enter user's full name"
                 />
-                {errors.name && <span className="field-error">{errors.name}</span>}
+                {errors.name && <div className="form-error">{errors.name}</div>}
               </div>
 
-              <div className="form-group">
-                <label htmlFor="email">Email *</label>
+              <div>
+                <label htmlFor="email" className="form-label">Email *</label>
                 <input
                   id="email"
                   name="email"
                   type="email"
                   value={formData.email}
                   onChange={handleChange}
-                  className={errors.email ? 'error' : ''}
+                  className={`form-input ${errors.email ? 'form-input-error' : ''}`}
                   placeholder="Enter email address"
                 />
-                {errors.email && <span className="field-error">{errors.email}</span>}
+                {errors.email && <div className="form-error">{errors.email}</div>}
               </div>
 
-              <div className="form-group">
-                <label htmlFor="role">Role *</label>
+              <div>
+                <label htmlFor="role" className="form-label">Role *</label>
                 <select
                   id="role"
                   name="role"
                   value={formData.role}
                   onChange={handleChange}
-                  className={errors.role ? 'error' : ''}
+                  className={`form-input ${errors.role ? 'form-input-error' : ''}`}
                 >
                   <option value="user">User</option>
                   <option value="admin">Admin</option>
                 </select>
-                {errors.role && <span className="field-error">{errors.role}</span>}
+                {errors.role && <div className="form-error">{errors.role}</div>}
               </div>
 
-              <div className="form-group">
-                <label htmlFor="password">
+              <div>
+                <label htmlFor="password" className="form-label">
                   Password {mode === 'create' ? '*' : '(leave blank to keep current)'}
                 </label>
                 <input
@@ -226,41 +235,54 @@ const UserModal = ({ user, mode, onSave, onClose }) => {
                   type="password"
                   value={formData.password}
                   onChange={handleChange}
-                  className={errors.password ? 'error' : ''}
+                  className={`form-input ${errors.password ? 'form-input-error' : ''}`}
                   placeholder={mode === 'create' ? 'Enter password' : 'Enter new password or leave blank'}
                 />
-                {errors.password && <span className="field-error">{errors.password}</span>}
-              </div>
-
-              <div className="form-actions">
-                <button
-                  type="button"
-                  className="btn btn-secondary"
-                  onClick={onClose}
-                  disabled={loading}
-                >
-                  Cancel
-                </button>
-                
-                <button
-                  type="submit"
-                  className="btn btn-primary"
-                  disabled={loading}
-                >
-                  {loading ? 'Saving...' : (mode === 'create' ? 'Create User' : 'Update User')}
-                </button>
+                {errors.password && <div className="form-error">{errors.password}</div>}
               </div>
             </form>
           )}
         </div>
 
-        {mode === 'view' && (
-          <div className="modal-footer">
-            <button className="btn btn-secondary" onClick={onClose}>
+        {/* Footer */}
+        <div className="flex justify-end gap-3 p-6 border-t border-gray-200 bg-gray-50">
+          {mode === 'view' ? (
+            <button
+              className="btn btn-secondary"
+              onClick={onClose}
+            >
               Close
             </button>
-          </div>
-        )}
+          ) : (
+            <>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={onClose}
+                disabled={loading}
+              >
+                Cancel
+              </button>
+
+              <button
+                type="submit"
+                form="user-form"
+                className="btn btn-primary"
+                disabled={loading}
+                onClick={handleSubmit}
+              >
+                {loading ? (
+                  <div className="flex items-center gap-2">
+                    <div className="loading-spinner w-4 h-4"></div>
+                    Saving...
+                  </div>
+                ) : (
+                  mode === 'create' ? 'Create User' : 'Update User'
+                )}
+              </button>
+            </>
+          )}
+        </div>
       </div>
     </div>
   )

@@ -60,187 +60,198 @@ const UserDashboard = () => {
   if (loading) {
     return (
       <DashboardLayout currentPage="dashboard" breadcrumbs={breadcrumbs}>
-        <div className="loading">Loading your dashboard...</div>
+        <div className="flex items-center justify-center py-12">
+          <div className="loading">
+            <div className="loading-spinner"></div>
+            Loading your dashboard...
+          </div>
+        </div>
       </DashboardLayout>
     )
   }
 
   return (
     <DashboardLayout currentPage="dashboard" breadcrumbs={breadcrumbs}>
-      <div className="dashboard-overview">
-        <div className="dashboard-header">
-          <h1>Welcome back, {user.name}!</h1>
-          <p style={{ color: 'var(--text-secondary)', fontSize: 'var(--text-lg)' }}>
-            Track your running events and manage your registrations
-          </p>
+      <div className="space-y-8">
+        {/* Header */}
+        <div className="page-header">
+          <div className="header-content">
+            <h1>Welcome back, {user.name}!</h1>
+            <p>Track your running events and manage your registrations</p>
+          </div>
         </div>
 
         {error && (
-          <div className="alert alert-error" style={{ marginBottom: '2rem' }}>
+          <div className="alert alert-error">
             {error}
           </div>
         )}
 
-        {/* User Stats Cards */}
-        <div className="stats-grid">
-          <div className="stat-card primary">
-            <Icon name="runner" size={28} className="stat-icon" />
-            <div className="stat-content">
-              <h3>{registrations.upcoming.length}</h3>
-              <p>Upcoming Events</p>
-              <span className="stat-change">Registered</span>
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="stat-card">
+            <div className="stat-icon stat-icon-primary">
+              <Icon name="runner" size={24} />
+            </div>
+            <div className="flex-1">
+              <div className="text-2xl font-bold text-gray-900">{registrations.upcoming.length}</div>
+              <div className="text-sm font-medium text-gray-600">Upcoming Events</div>
+              <div className="text-xs text-primary-600 mt-1">Registered</div>
             </div>
           </div>
 
-          <div className="stat-card success">
-            <Icon name="check-circle" size={28} className="stat-icon" />
-            <div className="stat-content">
-              <h3>{registrations.past.length}</h3>
-              <p>Completed Events</p>
-              <span className="stat-change">All time</span>
+          <div className="stat-card">
+            <div className="stat-icon stat-icon-success">
+              <Icon name="check-circle" size={24} />
+            </div>
+            <div className="flex-1">
+              <div className="text-2xl font-bold text-gray-900">{registrations.past.length}</div>
+              <div className="text-sm font-medium text-gray-600">Completed Events</div>
+              <div className="text-xs text-green-600 mt-1">All time</div>
             </div>
           </div>
 
-          <div className="stat-card warning">
-            <Icon name="bar-chart" size={28} className="stat-icon" />
-            <div className="stat-content">
-              <h3>{registrations.past.filter(r => r.has_logs > 0).length}</h3>
-              <p>Results Submitted</p>
-              <span className="stat-change">With times</span>
+          <div className="stat-card">
+            <div className="stat-icon stat-icon-warning">
+              <Icon name="bar-chart" size={24} />
+            </div>
+            <div className="flex-1">
+              <div className="text-2xl font-bold text-gray-900">{registrations.past.filter(r => r.has_logs > 0).length}</div>
+              <div className="text-sm font-medium text-gray-600">Results Submitted</div>
+              <div className="text-xs text-yellow-600 mt-1">With times</div>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Tabs */}
-      <div style={{ marginBottom: '2rem' }}>
-        <div style={{ 
-          display: 'flex', 
-          borderBottom: '2px solid #e9ecef',
-          marginBottom: '1rem'
-        }}>
-          <button
-            onClick={() => setActiveTab('upcoming')}
-            style={{
-              padding: '10px 20px',
-              border: 'none',
-              background: 'none',
-              borderBottom: activeTab === 'upcoming' ? '2px solid #007bff' : 'none',
-              color: activeTab === 'upcoming' ? '#007bff' : '#666',
-              fontWeight: activeTab === 'upcoming' ? 'bold' : 'normal',
-              cursor: 'pointer'
-            }}
-          >
-            Upcoming Events ({registrations.upcoming.length})
-          </button>
-          
-          <button
-            onClick={() => setActiveTab('past')}
-            style={{
-              padding: '10px 20px',
-              border: 'none',
-              background: 'none',
-              borderBottom: activeTab === 'past' ? '2px solid #007bff' : 'none',
-              color: activeTab === 'past' ? '#007bff' : '#666',
-              fontWeight: activeTab === 'past' ? 'bold' : 'normal',
-              cursor: 'pointer'
-            }}
-          >
-            Past Events ({registrations.past.length})
-          </button>
+        {/* Tabs */}
+        <div className="dashboard-card">
+          <div className="flex border-b border-gray-200 mb-6">
+            <button
+              onClick={() => setActiveTab('upcoming')}
+              className={`px-6 py-3 text-sm font-medium border-b-2 transition-colors ${
+                activeTab === 'upcoming'
+                  ? 'border-primary-600 text-primary-600'
+                  : 'border-transparent text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              Upcoming Events ({registrations.upcoming.length})
+            </button>
+
+            <button
+              onClick={() => setActiveTab('past')}
+              className={`px-6 py-3 text-sm font-medium border-b-2 transition-colors ${
+                activeTab === 'past'
+                  ? 'border-primary-600 text-primary-600'
+                  : 'border-transparent text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              Past Events ({registrations.past.length})
+            </button>
+          </div>
+
+          {/* Tab Content */}
+          {activeTab === 'upcoming' ? (
+            <UpcomingEvents events={registrations.upcoming} />
+          ) : (
+            <PastEvents events={registrations.past} />
+          )}
         </div>
 
-        {/* Tab Content */}
-        {activeTab === 'upcoming' ? (
-          <UpcomingEvents events={registrations.upcoming} />
-        ) : (
-          <PastEvents events={registrations.past} />
+        {/* Admin Section - Only visible to admin users */}
+        {isAdmin && (
+          <div className="border-t-2 border-gray-200 pt-8">
+            <div className="mb-8">
+              <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2 mb-2">
+                ⚙️ Administration
+              </h2>
+              <p className="text-gray-600">
+                Administrative tools and system overview
+              </p>
+            </div>
+
+            {/* Admin Stats Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+              <div className="stat-card">
+                <div className="stat-icon stat-icon-primary">
+                  <Icon name="calendar" size={24} />
+                </div>
+                <div className="flex-1">
+                  <div className="text-2xl font-bold text-gray-900">{stats.totalEvents}</div>
+                  <div className="text-sm font-medium text-gray-600">Total Events</div>
+                  <div className="text-xs text-primary-600 mt-1">+{stats.activeEvents} active</div>
+                </div>
+              </div>
+
+              <div className="stat-card">
+                <div className="stat-icon stat-icon-success">
+                  <Icon name="users" size={24} />
+                </div>
+                <div className="flex-1">
+                  <div className="text-2xl font-bold text-gray-900">{stats.totalUsers}</div>
+                  <div className="text-sm font-medium text-gray-600">Total Users</div>
+                  <div className="text-xs text-green-600 mt-1">Registered runners</div>
+                </div>
+              </div>
+
+              <div className="stat-card">
+                <div className="stat-icon stat-icon-warning">
+                  <Icon name="file-text" size={24} />
+                </div>
+                <div className="flex-1">
+                  <div className="text-2xl font-bold text-gray-900">{stats.totalRegistrations}</div>
+                  <div className="text-sm font-medium text-gray-600">Total Registrations</div>
+                  <div className="text-xs text-yellow-600 mt-1">All time</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Quick Actions */}
+            <div className="dashboard-card">
+              <h3 className="text-lg font-semibold text-gray-900 mb-6">Quick Actions</h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <Link
+                  to="/dashboard/events/create"
+                  className="flex items-center gap-4 p-4 bg-white border border-gray-200 rounded-lg hover:border-primary-300 hover:shadow-md transition-all duration-200"
+                >
+                  <div className="w-10 h-10 bg-primary-100 text-primary-600 rounded-lg flex items-center justify-center">
+                    <Icon name="plus" size={20} />
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-gray-900">Create Event</h4>
+                    <p className="text-sm text-gray-600">Add a new running event</p>
+                  </div>
+                </Link>
+
+                <Link
+                  to="/dashboard/users"
+                  className="flex items-center gap-4 p-4 bg-white border border-gray-200 rounded-lg hover:border-primary-300 hover:shadow-md transition-all duration-200"
+                >
+                  <div className="w-10 h-10 bg-green-100 text-green-600 rounded-lg flex items-center justify-center">
+                    <Icon name="users" size={20} />
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-gray-900">Manage Users</h4>
+                    <p className="text-sm text-gray-600">View and edit user accounts</p>
+                  </div>
+                </Link>
+
+                <Link
+                  to="/dashboard/registrations"
+                  className="flex items-center gap-4 p-4 bg-white border border-gray-200 rounded-lg hover:border-primary-300 hover:shadow-md transition-all duration-200"
+                >
+                  <div className="w-10 h-10 bg-yellow-100 text-yellow-600 rounded-lg flex items-center justify-center">
+                    <Icon name="file-text" size={20} />
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-gray-900">View Registrations</h4>
+                    <p className="text-sm text-gray-600">Monitor event registrations</p>
+                  </div>
+                </Link>
+              </div>
+            </div>
+          </div>
         )}
       </div>
-
-      {/* Admin Section - Only visible to admin users */}
-      {isAdmin && (
-        <div className="admin-section" style={{ marginTop: '3rem' }}>
-          <div className="section-divider" style={{
-            borderTop: '2px solid #e2e8f0',
-            margin: '2rem 0',
-            paddingTop: '2rem'
-          }}>
-            <h2 style={{
-              color: '#1e293b',
-              marginBottom: '1rem',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.5rem'
-            }}>
-              ⚙️ Administration
-            </h2>
-            <p style={{ color: '#64748b', marginBottom: '2rem' }}>
-              Administrative tools and system overview
-            </p>
-          </div>
-
-          {/* Admin Stats Cards */}
-          <div className="stats-grid">
-            <div className="stat-card primary">
-              <Icon name="calendar" size={28} className="stat-icon" />
-              <div className="stat-content">
-                <h3>{stats.totalEvents}</h3>
-                <p>Total Events</p>
-                <span className="stat-change">+{stats.activeEvents} active</span>
-              </div>
-            </div>
-
-            <div className="stat-card success">
-              <Icon name="users" size={28} className="stat-icon" />
-              <div className="stat-content">
-                <h3>{stats.totalUsers}</h3>
-                <p>Total Users</p>
-                <span className="stat-change">Registered runners</span>
-              </div>
-            </div>
-
-            <div className="stat-card warning">
-              <Icon name="file-text" size={28} className="stat-icon" />
-              <div className="stat-content">
-                <h3>{stats.totalRegistrations}</h3>
-                <p>Total Registrations</p>
-                <span className="stat-change">All time</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Quick Actions */}
-          <div className="dashboard-section">
-            <h3>Quick Actions</h3>
-            <div className="quick-actions">
-              <Link to="/dashboard/events/create" className="action-card">
-                <Icon name="plus" size={22} className="action-icon" />
-                <div className="action-content">
-                  <h4>Create Event</h4>
-                  <p>Add a new running event</p>
-                </div>
-              </Link>
-
-              <Link to="/dashboard/users" className="action-card">
-                <Icon name="users" size={22} className="action-icon" />
-                <div className="action-content">
-                  <h4>Manage Users</h4>
-                  <p>View and edit user accounts</p>
-                </div>
-              </Link>
-
-              <Link to="/dashboard/registrations" className="action-card">
-                <Icon name="file-text" size={22} className="action-icon" />
-                <div className="action-content">
-                  <h4>View Registrations</h4>
-                  <p>Monitor event registrations</p>
-                </div>
-              </Link>
-            </div>
-          </div>
-        </div>
-      )}
     </DashboardLayout>
   )
 }
@@ -248,12 +259,13 @@ const UserDashboard = () => {
 const UpcomingEvents = ({ events }) => {
   if (events.length === 0) {
     return (
-      <div className="card" style={{ textAlign: 'center', padding: '3rem' }}>
-        <h3>No upcoming events</h3>
-        <p style={{ color: '#666', marginBottom: '1rem' }}>
+      <div className="text-center py-12">
+        <div className="text-gray-400 text-6xl mb-4">📅</div>
+        <h3 className="text-xl font-semibold text-gray-900 mb-2">No upcoming events</h3>
+        <p className="text-gray-600 mb-6">
           You haven't registered for any upcoming events yet.
         </p>
-        <Link to="/" className="btn">
+        <Link to="/" className="btn btn-primary">
           Browse Events
         </Link>
       </div>
@@ -261,43 +273,74 @@ const UpcomingEvents = ({ events }) => {
   }
 
   return (
-    <div style={{ display: 'grid', gap: '1rem' }}>
+    <div className="space-y-4">
       {events.map(registration => (
-        <div key={registration.id} className="card">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <div style={{ flex: 1 }}>
-              <h3 style={{ margin: '0 0 0.5rem 0' }}>
-                <Link 
+        <div key={registration.id} className="card hover:shadow-md transition-shadow">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+            <div className="flex-1">
+              <h3 className="text-lg font-semibold mb-3">
+                <Link
                   to={`/events/${registration.event_id}`}
-                  style={{ color: '#007bff', textDecoration: 'none' }}
+                  className="text-primary-600 hover:text-primary-700 transition-colors"
                 >
                   {registration.event_name}
                 </Link>
               </h3>
-              
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
-                <div>
-                  <strong>📅 Date:</strong> {formatDateTime(registration.event_date)}
-                </div>
-                
-                <div>
-                  <strong>🏃‍♂️ Distance:</strong> {registration.distance}
-                </div>
-                
-                <div>
-                  <strong>📍 Type:</strong> {registration.event_type === 'virtual' ? '💻 Virtual' : '📍 On-site'}
-                </div>
-                
-                {registration.event_location && (
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="event-card-meta-item">
+                  <span className="text-lg">📅</span>
                   <div>
-                    <strong>📍 Location:</strong> {registration.event_location}
+                    <div className="font-medium text-gray-900">Date</div>
+                    <div className="text-gray-600">{formatDateTime(registration.event_date)}</div>
+                  </div>
+                </div>
+
+                <div className="event-card-meta-item">
+                  <span className="text-lg">🏃‍♂️</span>
+                  <div>
+                    <div className="font-medium text-gray-900">Distance</div>
+                    <div className="text-gray-600">{registration.distance}</div>
+                  </div>
+                </div>
+
+                <div className="event-card-meta-item">
+                  <span className="text-lg">📍</span>
+                  <div>
+                    <div className="font-medium text-gray-900">Type</div>
+                    <div className="text-gray-600">
+                      {registration.event_type === 'virtual' ? '💻 Virtual' : '📍 On-site'}
+                    </div>
+                  </div>
+                </div>
+
+                {registration.event_location && (
+                  <div className="event-card-meta-item">
+                    <span className="text-lg">📍</span>
+                    <div>
+                      <div className="font-medium text-gray-900">Location</div>
+                      <div className="text-gray-600">{registration.event_location}</div>
+                    </div>
                   </div>
                 )}
-                
-                <div>
-                  <strong>📝 Registered:</strong> {formatDate(registration.registered_at)}
+
+                <div className="event-card-meta-item">
+                  <span className="text-lg">📝</span>
+                  <div>
+                    <div className="font-medium text-gray-900">Registered</div>
+                    <div className="text-gray-600">{formatDate(registration.registered_at)}</div>
+                  </div>
                 </div>
               </div>
+            </div>
+
+            <div className="flex gap-2">
+              <Link
+                to={`/events/${registration.event_id}`}
+                className="btn btn-secondary"
+              >
+                View Details
+              </Link>
             </div>
           </div>
         </div>
@@ -309,9 +352,10 @@ const UpcomingEvents = ({ events }) => {
 const PastEvents = ({ events }) => {
   if (events.length === 0) {
     return (
-      <div className="card" style={{ textAlign: 'center', padding: '3rem' }}>
-        <h3>No past events</h3>
-        <p style={{ color: '#666' }}>
+      <div className="text-center py-12">
+        <div className="text-gray-400 text-6xl mb-4">🏆</div>
+        <h3 className="text-xl font-semibold text-gray-900 mb-2">No past events</h3>
+        <p className="text-gray-600">
           You haven't participated in any events yet.
         </p>
       </div>
@@ -319,7 +363,7 @@ const PastEvents = ({ events }) => {
   }
 
   return (
-    <div style={{ display: 'grid', gap: '1rem' }}>
+    <div className="space-y-4">
       {events.map(registration => (
         <PastEventCard key={registration.id} registration={registration} />
       ))}

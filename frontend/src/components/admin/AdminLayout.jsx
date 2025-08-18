@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
 import Sidebar from './Sidebar'
 import TopBar from './TopBar'
-import './AdminLayout.css'
+
 
 const AdminLayout = ({ children, currentPage, breadcrumbs }) => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)

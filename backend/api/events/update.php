@@ -39,7 +39,7 @@ try {
     $params = [];
     
     $allowedFields = [
-        'name', 'description', 'type', 'location', 
+        'name', 'description', 'cover_image', 'type', 'location',
         'event_date', 'registration_deadline', 'submission_deadline'
     ];
     
@@ -87,8 +87,8 @@ try {
     
     // Fetch updated event
     $stmt = $conn->prepare("
-        SELECT 
-            e.id, e.name, e.description, e.type, e.location, e.distances,
+        SELECT
+            e.id, e.name, e.description, e.cover_image, e.type, e.location, e.distances,
             e.event_date, e.registration_deadline, e.submission_deadline,
             e.created_at, e.updated_at, u.name as created_by_name
         FROM events e

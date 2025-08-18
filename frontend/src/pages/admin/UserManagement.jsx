@@ -3,7 +3,7 @@ import api from '../../utils/api'
 import DashboardLayout from '../../components/DashboardLayout'
 import UserTable from '../../components/admin/UserTable'
 import UserModal from '../../components/admin/UserModal'
-import './UserManagement.css'
+
 
 const UserManagement = () => {
   const [users, setUsers] = useState([])

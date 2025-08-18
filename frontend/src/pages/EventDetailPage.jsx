@@ -63,21 +63,32 @@ const EventDetailPage = () => {
   }
 
   if (loading) {
-    return <div className="loading">Loading event details...</div>
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="loading">
+          <div className="loading-spinner"></div>
+          Loading event details...
+        </div>
+      </div>
+    )
   }
 
   if (error && !event) {
     return (
-      <div className="container">
-        <div className="alert alert-error">{error}</div>
+      <div className="min-h-screen bg-gray-50 py-12">
+        <div className="container">
+          <div className="alert alert-error">{error}</div>
+        </div>
       </div>
     )
   }
 
   if (!event) {
     return (
-      <div className="container">
-        <div className="alert alert-error">Event not found</div>
+      <div className="min-h-screen bg-gray-50 py-12">
+        <div className="container">
+          <div className="alert alert-error">Event not found</div>
+        </div>
       </div>
     )
   }
@@ -87,180 +98,242 @@ const EventDetailPage = () => {
   const canRegister = upcoming && registrationOpen && !registrationSuccess
 
   return (
-    <div className="container">
-      <div style={{ marginBottom: '2rem' }}>
-        <button 
-          onClick={() => navigate('/')}
-          className="btn btn-secondary"
-          style={{ marginBottom: '1rem' }}
-        >
-          ← Back to Events
-        </button>
-        
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
-          <h1 style={{ margin: 0 }}>{event.name}</h1>
-          <span style={{
-            padding: '4px 12px',
-            borderRadius: '16px',
-            fontSize: '14px',
-            fontWeight: 'bold',
-            background: event.type === 'virtual' ? '#e3f2fd' : '#f3e5f5',
-            color: event.type === 'virtual' ? '#1976d2' : '#7b1fa2'
-          }}>
-            {event.type === 'virtual' ? '💻 Virtual Event' : '📍 On-site Event'}
-          </span>
-        </div>
-      </div>
+    <div className="min-h-screen bg-gray-50">
+      <div className="container py-8">
+        {/* Header */}
+        <div className="mb-8">
+          <button
+            onClick={() => navigate('/')}
+            className="btn btn-secondary mb-6 inline-flex items-center gap-2"
+          >
+            <span>←</span>
+            Back to Events
+          </button>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '2rem' }}>
-        {/* Main Content */}
-        <div>
-          <div className="card">
-            <h3>Event Description</h3>
-            <p style={{ lineHeight: '1.6', color: '#555' }}>{event.description}</p>
-          </div>
-
-          <div className="card">
-            <h3>Event Details</h3>
-            <div style={{ display: 'grid', gap: '1rem' }}>
-              <div>
-                <strong>📅 Date & Time:</strong> {formatDateTime(event.event_date)}
-              </div>
-              
-              {event.location && (
-                <div>
-                  <strong>📍 Location:</strong> {event.location}
-                </div>
-              )}
-              
-              <div>
-                <strong>🏃‍♂️ Available Distances:</strong> {event.distances.join(', ')}
-              </div>
-              
-              <div>
-                <strong>📝 Registration Deadline:</strong> {
-                  event.registration_deadline 
-                    ? formatDate(event.registration_deadline)
-                    : 'No deadline specified'
-                }
-              </div>
-              
-              {event.submission_deadline && (
-                <div>
-                  <strong>📤 Results Submission Deadline:</strong> {formatDate(event.submission_deadline)}
-                </div>
-              )}
-              
-              <div>
-                <strong>👥 Current Registrations:</strong> {event.registration_count || 0}
-                {event.metadata?.max_participants && event.metadata.max_participants !== 'unlimited' && (
-                  <span> / {event.metadata.max_participants}</span>
-                )}
-              </div>
-              
-              <div>
-                <strong>👤 Created by:</strong> {event.created_by_name}
-              </div>
-            </div>
-          </div>
-
-          {/* Event Metadata */}
-          {Object.keys(event.metadata || {}).length > 0 && (
-            <div className="card">
-              <h3>Additional Information</h3>
-              <div style={{ display: 'grid', gap: '0.5rem' }}>
-                {event.metadata.entry_fee && (
-                  <div>
-                    <strong>💰 Entry Fee:</strong> ${event.metadata.entry_fee}
-                  </div>
-                )}
-                
-                {event.metadata.difficulty_level && (
-                  <div>
-                    <strong>⭐ Difficulty:</strong> {event.metadata.difficulty_level}
-                  </div>
-                )}
-                
-                {event.metadata.max_participants && (
-                  <div>
-                    <strong>👥 Max Participants:</strong> {
-                      event.metadata.max_participants === 'unlimited' 
-                        ? 'Unlimited' 
-                        : event.metadata.max_participants
-                    }
-                  </div>
-                )}
-              </div>
+          {/* Event Cover Image */}
+          {event.cover_image && (
+            <div className="mb-6 rounded-xl overflow-hidden">
+              <img
+                src={event.cover_image}
+                alt={event.name}
+                className="w-full h-64 sm:h-80 object-cover"
+                onError={(e) => {
+                  e.target.style.display = 'none'
+                }}
+              />
             </div>
           )}
+
+          <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-6">
+            <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 m-0">{event.name}</h1>
+            <span className={`event-badge ${event.type === 'virtual' ? 'event-badge-virtual' : 'event-badge-onsite'} text-sm`}>
+              {event.type === 'virtual' ? '💻 Virtual Event' : '📍 On-site Event'}
+            </span>
+          </div>
         </div>
 
-        {/* Registration Sidebar */}
-        <div>
-          <div className="card">
-            <h3>Registration</h3>
-            
-            {registrationSuccess ? (
-              <div className="alert alert-success">
-                🎉 Successfully registered for this event!
-              </div>
-            ) : (
-              <>
-                {error && (
-                  <div className="alert alert-error" style={{ marginBottom: '1rem' }}>
-                    {error}
+        {/* Main Content */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2 space-y-6">
+            {/* Description */}
+            <div className="card">
+              <h3 className="text-xl font-semibold text-gray-900 mb-4">Event Description</h3>
+              <p className="text-gray-700 leading-relaxed">{event.description}</p>
+            </div>
+
+            {/* Event Details */}
+            <div className="card">
+              <h3 className="text-xl font-semibold text-gray-900 mb-6">Event Details</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div className="event-card-meta-item">
+                  <span className="text-xl">📅</span>
+                  <div>
+                    <div className="font-medium text-gray-900">Date & Time</div>
+                    <div className="text-gray-600">{formatDateTime(event.event_date)}</div>
+                  </div>
+                </div>
+
+                {event.location && (
+                  <div className="event-card-meta-item">
+                    <span className="text-xl">📍</span>
+                    <div>
+                      <div className="font-medium text-gray-900">Location</div>
+                      <div className="text-gray-600">{event.location}</div>
+                    </div>
                   </div>
                 )}
 
-                {!upcoming ? (
-                  <div className="alert alert-error">
-                    This event has already occurred.
-                  </div>
-                ) : !registrationOpen ? (
-                  <div className="alert alert-error">
-                    Registration deadline has passed.
-                  </div>
-                ) : !isAuthenticated ? (
+                <div className="event-card-meta-item">
+                  <span className="text-xl">🏃‍♂️</span>
                   <div>
-                    <p style={{ marginBottom: '1rem' }}>
-                      Please log in to register for this event.
-                    </p>
-                    <button 
-                      onClick={() => navigate('/login')}
-                      className="btn"
-                      style={{ width: '100%' }}
-                    >
-                      Login to Register
-                    </button>
+                    <div className="font-medium text-gray-900">Available Distances</div>
+                    <div className="text-gray-600">{event.distances.join(', ')}</div>
                   </div>
-                ) : (
+                </div>
+
+                <div className="event-card-meta-item">
+                  <span className="text-xl">📝</span>
                   <div>
-                    <div className="form-group">
-                      <label>Select Distance</label>
-                      <select
-                        value={selectedDistance}
-                        onChange={(e) => setSelectedDistance(e.target.value)}
-                      >
-                        {event.distances.map(distance => (
-                          <option key={distance} value={distance}>
-                            {distance}
-                          </option>
-                        ))}
-                      </select>
+                    <div className="font-medium text-gray-900">Registration Deadline</div>
+                    <div className="text-gray-600">
+                      {event.registration_deadline
+                        ? formatDate(event.registration_deadline)
+                        : 'No deadline specified'
+                      }
                     </div>
-                    
-                    <button
-                      onClick={handleRegister}
-                      disabled={registering || !selectedDistance}
-                      className="btn"
-                      style={{ width: '100%' }}
-                    >
-                      {registering ? 'Registering...' : 'Register for Event'}
-                    </button>
+                  </div>
+                </div>
+
+                {event.submission_deadline && (
+                  <div className="event-card-meta-item">
+                    <span className="text-xl">📤</span>
+                    <div>
+                      <div className="font-medium text-gray-900">Results Submission</div>
+                      <div className="text-gray-600">{formatDate(event.submission_deadline)}</div>
+                    </div>
                   </div>
                 )}
-              </>
+
+                <div className="event-card-meta-item">
+                  <span className="text-xl">👥</span>
+                  <div>
+                    <div className="font-medium text-gray-900">Registrations</div>
+                    <div className="text-gray-600">
+                      {event.registration_count || 0}
+                      {event.metadata?.max_participants && event.metadata.max_participants !== 'unlimited' && (
+                        <span> / {event.metadata.max_participants}</span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="event-card-meta-item">
+                  <span className="text-xl">👤</span>
+                  <div>
+                    <div className="font-medium text-gray-900">Created by</div>
+                    <div className="text-gray-600">{event.created_by_name}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Event Metadata */}
+            {Object.keys(event.metadata || {}).length > 0 && (
+              <div className="card">
+                <h3 className="text-xl font-semibold text-gray-900 mb-6">Additional Information</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {event.metadata.entry_fee && (
+                    <div className="event-card-meta-item">
+                      <span className="text-xl">💰</span>
+                      <div>
+                        <div className="font-medium text-gray-900">Entry Fee</div>
+                        <div className="text-gray-600">${event.metadata.entry_fee}</div>
+                      </div>
+                    </div>
+                  )}
+
+                  {event.metadata.difficulty_level && (
+                    <div className="event-card-meta-item">
+                      <span className="text-xl">⭐</span>
+                      <div>
+                        <div className="font-medium text-gray-900">Difficulty</div>
+                        <div className="text-gray-600">{event.metadata.difficulty_level}</div>
+                      </div>
+                    </div>
+                  )}
+
+                  {event.metadata.max_participants && (
+                    <div className="event-card-meta-item">
+                      <span className="text-xl">👥</span>
+                      <div>
+                        <div className="font-medium text-gray-900">Max Participants</div>
+                        <div className="text-gray-600">
+                          {event.metadata.max_participants === 'unlimited'
+                            ? 'Unlimited'
+                            : event.metadata.max_participants
+                          }
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
             )}
+          </div>
+
+          {/* Registration Sidebar */}
+          <div className="lg:col-span-1">
+            <div className="card sticky top-8">
+              <h3 className="text-xl font-semibold text-gray-900 mb-6">Registration</h3>
+
+              {registrationSuccess ? (
+                <div className="alert alert-success">
+                  🎉 Successfully registered for this event!
+                </div>
+              ) : (
+                <>
+                  {error && (
+                    <div className="alert alert-error mb-4">
+                      {error}
+                    </div>
+                  )}
+
+                  {!upcoming ? (
+                    <div className="alert alert-error">
+                      This event has already occurred.
+                    </div>
+                  ) : !registrationOpen ? (
+                    <div className="alert alert-error">
+                      Registration deadline has passed.
+                    </div>
+                  ) : !isAuthenticated ? (
+                    <div className="text-center">
+                      <p className="text-gray-600 mb-4">
+                        Please log in to register for this event.
+                      </p>
+                      <button
+                        onClick={() => navigate('/login')}
+                        className="btn btn-primary w-full justify-center"
+                      >
+                        Login to Register
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      <div>
+                        <label className="form-label">Select Distance</label>
+                        <select
+                          className="form-input"
+                          value={selectedDistance}
+                          onChange={(e) => setSelectedDistance(e.target.value)}
+                        >
+                          {event.distances.map(distance => (
+                            <option key={distance} value={distance}>
+                              {distance}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <button
+                        onClick={handleRegister}
+                        disabled={registering || !selectedDistance}
+                        className="btn btn-primary w-full justify-center"
+                      >
+                        {registering ? (
+                          <div className="flex items-center gap-2">
+                            <div className="loading-spinner w-4 h-4"></div>
+                            Registering...
+                          </div>
+                        ) : (
+                          'Register for Event'
+                        )}
+                      </button>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
           </div>
         </div>
       </div>

@@ -1,4 +1,4 @@
-import './UserTable.css'
+
 
 const UserTable = ({ 
   users, 
