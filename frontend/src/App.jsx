@@ -4,6 +4,9 @@ import HomePage from './pages/HomePage'
 import EventDetailPage from './pages/EventDetailPage'
 import LoginPage from './pages/LoginPage'
 import UserDashboard from './pages/UserDashboard'
+import MyEvents from './pages/MyEvents'
+import Profile from './pages/Profile'
+import Settings from './pages/Settings'
 import UserManagement from './pages/admin/UserManagement'
 import EventManagement from './pages/admin/EventManagement'
 import RegistrationManagement from './pages/admin/RegistrationManagement'
@@ -29,7 +32,32 @@ function AppContent() {
               </ProtectedRoute>
             }
           />
-          {/* Dashboard Routes */}
+          {/* User Dashboard Routes */}
+          <Route
+            path="/dashboard/my-events"
+            element={
+              <ProtectedRoute>
+                <MyEvents />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard/profile"
+            element={
+              <ProtectedRoute>
+                <Profile />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard/settings"
+            element={
+              <ProtectedRoute>
+                <Settings />
+              </ProtectedRoute>
+            }
+          />
+          {/* Admin Dashboard Routes */}
           <Route
             path="/dashboard/users"
             element={

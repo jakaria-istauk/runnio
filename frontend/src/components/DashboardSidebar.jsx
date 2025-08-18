@@ -1,4 +1,5 @@
 import { Link, useLocation } from 'react-router-dom'
+import Icon from './Icon'
 
 const DashboardSidebar = ({ collapsed, onToggle, currentPage, isAdmin }) => {
   const location = useLocation()
@@ -8,20 +9,20 @@ const DashboardSidebar = ({ collapsed, onToggle, currentPage, isAdmin }) => {
     {
       id: 'dashboard',
       label: 'Dashboard',
-      icon: '🏠',
+      icon: 'home',
       path: '/dashboard',
       exact: true
     },
     {
       id: 'my-events',
       label: 'My Events',
-      icon: '🏃‍♂️',
+      icon: 'runner',
       path: '/dashboard/my-events'
     },
     {
       id: 'profile',
       label: 'Profile',
-      icon: '👤',
+      icon: 'user',
       path: '/dashboard/profile'
     }
   ]
@@ -36,25 +37,25 @@ const DashboardSidebar = ({ collapsed, onToggle, currentPage, isAdmin }) => {
     {
       id: 'events',
       label: 'Manage Events',
-      icon: '🏃‍♂️',
+      icon: 'calendar',
       path: '/dashboard/events'
     },
     {
       id: 'users',
       label: 'Manage Users',
-      icon: '👥',
+      icon: 'users',
       path: '/dashboard/users'
     },
     {
       id: 'registrations',
       label: 'Registrations',
-      icon: '📝',
+      icon: 'file-text',
       path: '/dashboard/registrations'
     },
     {
       id: 'settings',
       label: 'Settings',
-      icon: '⚙️',
+      icon: 'settings',
       path: '/dashboard/settings'
     }
   ]
@@ -73,15 +74,15 @@ const DashboardSidebar = ({ collapsed, onToggle, currentPage, isAdmin }) => {
     <aside className={`dashboard-sidebar ${collapsed ? 'collapsed' : ''}`}>
       <div className="sidebar-header">
         <div className="logo">
-          <span className="logo-icon">🏃‍♂️</span>
+          <Icon name="runner" size={24} className="logo-icon" />
           {!collapsed && <span className="logo-text">Runnio</span>}
         </div>
-        <button 
+        <button
           className="sidebar-toggle"
           onClick={onToggle}
           aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
         >
-          {collapsed ? '→' : '←'}
+          <Icon name={collapsed ? 'chevron-right' : 'menu'} size={16} />
         </button>
       </div>
 
@@ -98,12 +99,12 @@ const DashboardSidebar = ({ collapsed, onToggle, currentPage, isAdmin }) => {
 
             return (
               <li key={item.id} className="nav-item">
-                <Link 
+                <Link
                   to={item.path}
                   className={`nav-link ${isActive(item) ? 'active' : ''}`}
                   title={collapsed ? item.label : ''}
                 >
-                  <span className="nav-icon">{item.icon}</span>
+                  <Icon name={item.icon} size={18} className="nav-icon" />
                   {!collapsed && <span className="nav-label">{item.label}</span>}
                 </Link>
               </li>

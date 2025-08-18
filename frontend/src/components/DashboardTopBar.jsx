@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
+import Icon from './Icon'
 
 const DashboardTopBar = ({ user, breadcrumbs, onToggleSidebar, sidebarCollapsed }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false)
@@ -95,19 +96,19 @@ const DashboardTopBar = ({ user, breadcrumbs, onToggleSidebar, sidebarCollapsed 
                       navigate('/dashboard/profile')
                     }}
                   >
-                    <span className="dropdown-icon">👤</span>
+                    <Icon name="user" size={16} className="dropdown-icon" />
                     Profile Settings
                   </button>
                 </li>
                 <li>
-                  <button 
+                  <button
                     className="dropdown-item"
                     onClick={() => {
                       setDropdownOpen(false)
                       navigate('/dashboard/settings')
                     }}
                   >
-                    <span className="dropdown-icon">⚙️</span>
+                    <Icon name="settings" size={16} className="dropdown-icon" />
                     Settings
                   </button>
                 </li>
@@ -124,7 +125,7 @@ const DashboardTopBar = ({ user, breadcrumbs, onToggleSidebar, sidebarCollapsed 
                       handleLogout()
                     }}
                   >
-                    <span className="dropdown-icon">🚪</span>
+                    <Icon name="logout" size={16} className="dropdown-icon" />
                     Logout
                   </button>
                 </li>

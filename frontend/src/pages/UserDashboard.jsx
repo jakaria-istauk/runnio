@@ -4,6 +4,7 @@ import api from '../utils/api'
 import { useAuth } from '../contexts/AuthContext'
 import { formatDate, formatDateTime, formatTime } from '../utils/dateUtils'
 import DashboardLayout from '../components/DashboardLayout'
+import Icon from '../components/Icon'
 
 const UserDashboard = () => {
   const { user, isAdmin } = useAuth()
@@ -68,8 +69,8 @@ const UserDashboard = () => {
     <DashboardLayout currentPage="dashboard" breadcrumbs={breadcrumbs}>
       <div className="dashboard-overview">
         <div className="dashboard-header">
-          <h1>Welcome back, {user.name}! 👋</h1>
-          <p style={{ color: '#666', fontSize: '1.1rem' }}>
+          <h1>Welcome back, {user.name}!</h1>
+          <p style={{ color: 'var(--text-secondary)', fontSize: 'var(--text-lg)' }}>
             Track your running events and manage your registrations
           </p>
         </div>
@@ -81,9 +82,9 @@ const UserDashboard = () => {
         )}
 
         {/* User Stats Cards */}
-        <div className="stats-grid" style={{ marginBottom: '2rem' }}>
+        <div className="stats-grid">
           <div className="stat-card primary">
-            <div className="stat-icon">🏃‍♂️</div>
+            <Icon name="runner" size={28} className="stat-icon" />
             <div className="stat-content">
               <h3>{registrations.upcoming.length}</h3>
               <p>Upcoming Events</p>
@@ -92,7 +93,7 @@ const UserDashboard = () => {
           </div>
 
           <div className="stat-card success">
-            <div className="stat-icon">✅</div>
+            <Icon name="check-circle" size={28} className="stat-icon" />
             <div className="stat-content">
               <h3>{registrations.past.length}</h3>
               <p>Completed Events</p>
@@ -101,7 +102,7 @@ const UserDashboard = () => {
           </div>
 
           <div className="stat-card warning">
-            <div className="stat-icon">📊</div>
+            <Icon name="bar-chart" size={28} className="stat-icon" />
             <div className="stat-content">
               <h3>{registrations.past.filter(r => r.has_logs > 0).length}</h3>
               <p>Results Submitted</p>
@@ -180,9 +181,9 @@ const UserDashboard = () => {
           </div>
 
           {/* Admin Stats Cards */}
-          <div className="stats-grid" style={{ marginBottom: '2rem' }}>
+          <div className="stats-grid">
             <div className="stat-card primary">
-              <div className="stat-icon">🏃‍♂️</div>
+              <Icon name="calendar" size={28} className="stat-icon" />
               <div className="stat-content">
                 <h3>{stats.totalEvents}</h3>
                 <p>Total Events</p>
@@ -191,7 +192,7 @@ const UserDashboard = () => {
             </div>
 
             <div className="stat-card success">
-              <div className="stat-icon">👥</div>
+              <Icon name="users" size={28} className="stat-icon" />
               <div className="stat-content">
                 <h3>{stats.totalUsers}</h3>
                 <p>Total Users</p>
@@ -200,7 +201,7 @@ const UserDashboard = () => {
             </div>
 
             <div className="stat-card warning">
-              <div className="stat-icon">📝</div>
+              <Icon name="file-text" size={28} className="stat-icon" />
               <div className="stat-content">
                 <h3>{stats.totalRegistrations}</h3>
                 <p>Total Registrations</p>
@@ -211,66 +212,29 @@ const UserDashboard = () => {
 
           {/* Quick Actions */}
           <div className="dashboard-section">
-            <h3 style={{ marginBottom: '1rem' }}>Quick Actions</h3>
-            <div className="quick-actions" style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-              gap: '1rem'
-            }}>
-              <Link to="/dashboard/events/create" className="action-card" style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '1rem',
-                padding: '1.5rem',
-                backgroundColor: '#fff',
-                border: '1px solid #e2e8f0',
-                borderRadius: '8px',
-                textDecoration: 'none',
-                color: '#1e293b',
-                transition: 'all 0.2s ease'
-              }}>
-                <div className="action-icon" style={{ fontSize: '24px' }}>➕</div>
+            <h3>Quick Actions</h3>
+            <div className="quick-actions">
+              <Link to="/dashboard/events/create" className="action-card">
+                <Icon name="plus" size={22} className="action-icon" />
                 <div className="action-content">
-                  <h4 style={{ margin: '0 0 0.25rem 0' }}>Create Event</h4>
-                  <p style={{ margin: 0, color: '#64748b', fontSize: '14px' }}>Add a new running event</p>
+                  <h4>Create Event</h4>
+                  <p>Add a new running event</p>
                 </div>
               </Link>
 
-              <Link to="/dashboard/users" className="action-card" style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '1rem',
-                padding: '1.5rem',
-                backgroundColor: '#fff',
-                border: '1px solid #e2e8f0',
-                borderRadius: '8px',
-                textDecoration: 'none',
-                color: '#1e293b',
-                transition: 'all 0.2s ease'
-              }}>
-                <div className="action-icon" style={{ fontSize: '24px' }}>👤</div>
+              <Link to="/dashboard/users" className="action-card">
+                <Icon name="users" size={22} className="action-icon" />
                 <div className="action-content">
-                  <h4 style={{ margin: '0 0 0.25rem 0' }}>Manage Users</h4>
-                  <p style={{ margin: 0, color: '#64748b', fontSize: '14px' }}>View and edit user accounts</p>
+                  <h4>Manage Users</h4>
+                  <p>View and edit user accounts</p>
                 </div>
               </Link>
 
-              <Link to="/dashboard/registrations" className="action-card" style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '1rem',
-                padding: '1.5rem',
-                backgroundColor: '#fff',
-                border: '1px solid #e2e8f0',
-                borderRadius: '8px',
-                textDecoration: 'none',
-                color: '#1e293b',
-                transition: 'all 0.2s ease'
-              }}>
-                <div className="action-icon" style={{ fontSize: '24px' }}>📋</div>
+              <Link to="/dashboard/registrations" className="action-card">
+                <Icon name="file-text" size={22} className="action-icon" />
                 <div className="action-content">
-                  <h4 style={{ margin: '0 0 0.25rem 0' }}>View Registrations</h4>
-                  <p style={{ margin: 0, color: '#64748b', fontSize: '14px' }}>Monitor event registrations</p>
+                  <h4>View Registrations</h4>
+                  <p>Monitor event registrations</p>
                 </div>
               </Link>
             </div>
