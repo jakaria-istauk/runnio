@@ -5,7 +5,10 @@ import EventDetailPage from './pages/EventDetailPage'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
 import UserDashboard from './pages/UserDashboard'
-import AdminDashboard from './pages/AdminDashboard'
+import DashboardOverview from './pages/admin/DashboardOverview'
+import UserManagement from './pages/admin/UserManagement'
+import EventManagement from './pages/admin/EventManagement'
+import RegistrationManagement from './pages/admin/RegistrationManagement'
 import ProtectedRoute from './components/ProtectedRoute'
 
 function App() {
@@ -26,13 +29,38 @@ function App() {
               </ProtectedRoute>
             } 
           />
-          <Route 
-            path="/admin" 
+          {/* Admin Routes */}
+          <Route
+            path="/admin"
             element={
               <ProtectedRoute requireAdmin>
-                <AdminDashboard />
+                <DashboardOverview />
               </ProtectedRoute>
-            } 
+            }
+          />
+          <Route
+            path="/admin/users"
+            element={
+              <ProtectedRoute requireAdmin>
+                <UserManagement />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/events"
+            element={
+              <ProtectedRoute requireAdmin>
+                <EventManagement />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/registrations"
+            element={
+              <ProtectedRoute requireAdmin>
+                <RegistrationManagement />
+              </ProtectedRoute>
+            }
           />
         </Routes>
       </main>
