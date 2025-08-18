@@ -44,18 +44,12 @@ const Navbar = () => {
               <Link to="/dashboard" style={{ textDecoration: 'none', color: '#333' }}>
                 Dashboard
               </Link>
-              
-              {isAdmin && (
-                <Link to="/admin" style={{ textDecoration: 'none', color: '#333' }}>
-                  Admin
-                </Link>
-              )}
-              
+
               <span style={{ color: '#666' }}>
                 Welcome, {user.name}
               </span>
-              
-              <button 
+
+              <button
                 onClick={handleLogout}
                 className="btn btn-secondary"
                 style={{ padding: '5px 15px', fontSize: '14px' }}
@@ -67,9 +61,6 @@ const Navbar = () => {
             <>
               <Link to="/login" className="btn" style={{ padding: '5px 15px', fontSize: '14px' }}>
                 Login
-              </Link>
-              <Link to="/register" className="btn btn-secondary" style={{ padding: '5px 15px', fontSize: '14px' }}>
-                Register
               </Link>
             </>
           )}

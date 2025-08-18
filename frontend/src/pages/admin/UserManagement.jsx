@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import api from '../../utils/api'
-import AdminLayout from '../../components/admin/AdminLayout'
+import DashboardLayout from '../../components/DashboardLayout'
 import UserTable from '../../components/admin/UserTable'
 import UserModal from '../../components/admin/UserModal'
 import './UserManagement.css'
@@ -150,12 +150,12 @@ const UserManagement = () => {
   }
 
   const breadcrumbs = [
-    { label: 'Dashboard', link: '/admin' },
+    { label: 'Dashboard', link: '/dashboard' },
     { label: 'User Management' }
   ]
 
   return (
-    <AdminLayout currentPage="users" breadcrumbs={breadcrumbs}>
+    <DashboardLayout currentPage="users" breadcrumbs={breadcrumbs}>
       <div className="user-management">
         <div className="page-header">
           <div className="header-content">
@@ -261,7 +261,7 @@ const UserManagement = () => {
           />
         )}
       </div>
-    </AdminLayout>
+    </DashboardLayout>
   )
 }
 

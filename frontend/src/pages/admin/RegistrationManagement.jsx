@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import api from '../../utils/api'
-import AdminLayout from '../../components/admin/AdminLayout'
+import DashboardLayout from '../../components/DashboardLayout'
 
 const RegistrationManagement = () => {
   const [registrations, setRegistrations] = useState([])
@@ -44,20 +44,20 @@ const RegistrationManagement = () => {
   }
 
   const breadcrumbs = [
-    { label: 'Dashboard', link: '/admin' },
+    { label: 'Dashboard', link: '/dashboard' },
     { label: 'Registration Management' }
   ]
 
   if (loading) {
     return (
-      <AdminLayout currentPage="registrations" breadcrumbs={breadcrumbs}>
+      <DashboardLayout currentPage="registrations" breadcrumbs={breadcrumbs}>
         <div className="loading">Loading registrations...</div>
-      </AdminLayout>
+      </DashboardLayout>
     )
   }
 
   return (
-    <AdminLayout currentPage="registrations" breadcrumbs={breadcrumbs}>
+    <DashboardLayout currentPage="registrations" breadcrumbs={breadcrumbs}>
       <div className="page-header">
         <div className="header-content">
           <h1>Registration Management</h1>
@@ -144,7 +144,7 @@ const RegistrationManagement = () => {
           </div>
         ))}
       </div>
-    </AdminLayout>
+    </DashboardLayout>
   )
 }
 

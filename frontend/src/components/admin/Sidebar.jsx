@@ -8,32 +8,32 @@ const Sidebar = ({ collapsed, onToggle, currentPage }) => {
       id: 'dashboard',
       label: 'Dashboard',
       icon: '📊',
-      path: '/admin',
+      path: '/dashboard',
       exact: true
     },
     {
       id: 'events',
       label: 'Events',
       icon: '🏃‍♂️',
-      path: '/admin/events'
+      path: '/dashboard/events'
     },
     {
       id: 'users',
       label: 'Users',
       icon: '👥',
-      path: '/admin/users'
+      path: '/dashboard/users'
     },
     {
       id: 'registrations',
       label: 'Registrations',
       icon: '📝',
-      path: '/admin/registrations'
+      path: '/dashboard/registrations'
     },
     {
       id: 'settings',
       label: 'Settings',
       icon: '⚙️',
-      path: '/admin/settings'
+      path: '/dashboard/settings'
     }
   ]
 

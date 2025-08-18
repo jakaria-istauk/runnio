@@ -3,17 +3,27 @@ import { Link } from 'react-router-dom'
 import api from '../utils/api'
 import { useAuth } from '../contexts/AuthContext'
 import { formatDate, formatDateTime, formatTime } from '../utils/dateUtils'
+import DashboardLayout from '../components/DashboardLayout'
 
 const UserDashboard = () => {
-  const { user } = useAuth()
+  const { user, isAdmin } = useAuth()
   const [registrations, setRegistrations] = useState({ upcoming: [], past: [] })
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [activeTab, setActiveTab] = useState('upcoming')
+  const [stats, setStats] = useState({
+    totalEvents: 0,
+    totalUsers: 0,
+    totalRegistrations: 0,
+    activeEvents: 0
+  })
 
   useEffect(() => {
     fetchRegistrations()
-  }, [user])
+    if (isAdmin) {
+      fetchAdminStats()
+    }
+  }, [user, isAdmin])
 
   const fetchRegistrations = async () => {
     try {
@@ -27,51 +37,77 @@ const UserDashboard = () => {
     }
   }
 
+  const fetchAdminStats = async () => {
+    try {
+      // For now, use mock data to test the interface
+      // TODO: Replace with actual API calls when backend is available
+      setStats({
+        totalEvents: 12,
+        totalUsers: 156,
+        totalRegistrations: 89,
+        activeEvents: 5
+      })
+    } catch (err) {
+      console.error('Failed to load admin stats:', err)
+    }
+  }
+
+  const breadcrumbs = [
+    { label: 'Dashboard', link: null }
+  ]
+
   if (loading) {
-    return <div className="loading">Loading your dashboard...</div>
+    return (
+      <DashboardLayout currentPage="dashboard" breadcrumbs={breadcrumbs}>
+        <div className="loading">Loading your dashboard...</div>
+      </DashboardLayout>
+    )
   }
 
   return (
-    <div className="container">
-      <div style={{ marginBottom: '2rem' }}>
-        <h1>Welcome back, {user.name}! 👋</h1>
-        <p style={{ color: '#666', fontSize: '1.1rem' }}>
-          Track your running events and manage your registrations
-        </p>
-      </div>
+    <DashboardLayout currentPage="dashboard" breadcrumbs={breadcrumbs}>
+      <div className="dashboard-overview">
+        <div className="dashboard-header">
+          <h1>Welcome back, {user.name}! 👋</h1>
+          <p style={{ color: '#666', fontSize: '1.1rem' }}>
+            Track your running events and manage your registrations
+          </p>
+        </div>
 
-      {error && (
-        <div className="alert alert-error" style={{ marginBottom: '2rem' }}>
-          {error}
-        </div>
-      )}
+        {error && (
+          <div className="alert alert-error" style={{ marginBottom: '2rem' }}>
+            {error}
+          </div>
+        )}
 
-      {/* Stats Cards */}
-      <div style={{ 
-        display: 'grid', 
-        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
-        gap: '1rem',
-        marginBottom: '2rem'
-      }}>
-        <div className="card" style={{ textAlign: 'center' }}>
-          <h3 style={{ color: '#007bff', margin: '0 0 0.5rem 0' }}>
-            {registrations.upcoming.length}
-          </h3>
-          <p style={{ margin: 0, color: '#666' }}>Upcoming Events</p>
-        </div>
-        
-        <div className="card" style={{ textAlign: 'center' }}>
-          <h3 style={{ color: '#28a745', margin: '0 0 0.5rem 0' }}>
-            {registrations.past.length}
-          </h3>
-          <p style={{ margin: 0, color: '#666' }}>Completed Events</p>
-        </div>
-        
-        <div className="card" style={{ textAlign: 'center' }}>
-          <h3 style={{ color: '#6f42c1', margin: '0 0 0.5rem 0' }}>
-            {registrations.past.filter(r => r.has_logs > 0).length}
-          </h3>
-          <p style={{ margin: 0, color: '#666' }}>Results Submitted</p>
+        {/* User Stats Cards */}
+        <div className="stats-grid" style={{ marginBottom: '2rem' }}>
+          <div className="stat-card primary">
+            <div className="stat-icon">🏃‍♂️</div>
+            <div className="stat-content">
+              <h3>{registrations.upcoming.length}</h3>
+              <p>Upcoming Events</p>
+              <span className="stat-change">Registered</span>
+            </div>
+          </div>
+
+          <div className="stat-card success">
+            <div className="stat-icon">✅</div>
+            <div className="stat-content">
+              <h3>{registrations.past.length}</h3>
+              <p>Completed Events</p>
+              <span className="stat-change">All time</span>
+            </div>
+          </div>
+
+          <div className="stat-card warning">
+            <div className="stat-icon">📊</div>
+            <div className="stat-content">
+              <h3>{registrations.past.filter(r => r.has_logs > 0).length}</h3>
+              <p>Results Submitted</p>
+              <span className="stat-change">With times</span>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -120,7 +156,128 @@ const UserDashboard = () => {
           <PastEvents events={registrations.past} />
         )}
       </div>
-    </div>
+
+      {/* Admin Section - Only visible to admin users */}
+      {isAdmin && (
+        <div className="admin-section" style={{ marginTop: '3rem' }}>
+          <div className="section-divider" style={{
+            borderTop: '2px solid #e2e8f0',
+            margin: '2rem 0',
+            paddingTop: '2rem'
+          }}>
+            <h2 style={{
+              color: '#1e293b',
+              marginBottom: '1rem',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem'
+            }}>
+              ⚙️ Administration
+            </h2>
+            <p style={{ color: '#64748b', marginBottom: '2rem' }}>
+              Administrative tools and system overview
+            </p>
+          </div>
+
+          {/* Admin Stats Cards */}
+          <div className="stats-grid" style={{ marginBottom: '2rem' }}>
+            <div className="stat-card primary">
+              <div className="stat-icon">🏃‍♂️</div>
+              <div className="stat-content">
+                <h3>{stats.totalEvents}</h3>
+                <p>Total Events</p>
+                <span className="stat-change">+{stats.activeEvents} active</span>
+              </div>
+            </div>
+
+            <div className="stat-card success">
+              <div className="stat-icon">👥</div>
+              <div className="stat-content">
+                <h3>{stats.totalUsers}</h3>
+                <p>Total Users</p>
+                <span className="stat-change">Registered runners</span>
+              </div>
+            </div>
+
+            <div className="stat-card warning">
+              <div className="stat-icon">📝</div>
+              <div className="stat-content">
+                <h3>{stats.totalRegistrations}</h3>
+                <p>Total Registrations</p>
+                <span className="stat-change">All time</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Quick Actions */}
+          <div className="dashboard-section">
+            <h3 style={{ marginBottom: '1rem' }}>Quick Actions</h3>
+            <div className="quick-actions" style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+              gap: '1rem'
+            }}>
+              <Link to="/dashboard/events/create" className="action-card" style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '1rem',
+                padding: '1.5rem',
+                backgroundColor: '#fff',
+                border: '1px solid #e2e8f0',
+                borderRadius: '8px',
+                textDecoration: 'none',
+                color: '#1e293b',
+                transition: 'all 0.2s ease'
+              }}>
+                <div className="action-icon" style={{ fontSize: '24px' }}>➕</div>
+                <div className="action-content">
+                  <h4 style={{ margin: '0 0 0.25rem 0' }}>Create Event</h4>
+                  <p style={{ margin: 0, color: '#64748b', fontSize: '14px' }}>Add a new running event</p>
+                </div>
+              </Link>
+
+              <Link to="/dashboard/users" className="action-card" style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '1rem',
+                padding: '1.5rem',
+                backgroundColor: '#fff',
+                border: '1px solid #e2e8f0',
+                borderRadius: '8px',
+                textDecoration: 'none',
+                color: '#1e293b',
+                transition: 'all 0.2s ease'
+              }}>
+                <div className="action-icon" style={{ fontSize: '24px' }}>👤</div>
+                <div className="action-content">
+                  <h4 style={{ margin: '0 0 0.25rem 0' }}>Manage Users</h4>
+                  <p style={{ margin: 0, color: '#64748b', fontSize: '14px' }}>View and edit user accounts</p>
+                </div>
+              </Link>
+
+              <Link to="/dashboard/registrations" className="action-card" style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '1rem',
+                padding: '1.5rem',
+                backgroundColor: '#fff',
+                border: '1px solid #e2e8f0',
+                borderRadius: '8px',
+                textDecoration: 'none',
+                color: '#1e293b',
+                transition: 'all 0.2s ease'
+              }}>
+                <div className="action-icon" style={{ fontSize: '24px' }}>📋</div>
+                <div className="action-content">
+                  <h4 style={{ margin: '0 0 0.25rem 0' }}>View Registrations</h4>
+                  <p style={{ margin: 0, color: '#64748b', fontSize: '14px' }}>Monitor event registrations</p>
+                </div>
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
+    </DashboardLayout>
   )
 }
 

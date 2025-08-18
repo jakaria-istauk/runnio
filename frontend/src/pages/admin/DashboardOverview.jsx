@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import api from '../../utils/api'
-import AdminLayout from '../../components/admin/AdminLayout'
+import DashboardLayout from '../../components/DashboardLayout'
 import './DashboardOverview.css'
 
 const DashboardOverview = () => {
@@ -75,7 +75,7 @@ const DashboardOverview = () => {
   }
 
   const breadcrumbs = [
-    { label: 'Dashboard', link: '/admin' }
+    { label: 'Dashboard', link: '/dashboard' }
   ]
 
   const formatDate = (dateString) => {
@@ -88,17 +88,17 @@ const DashboardOverview = () => {
 
   if (loading) {
     return (
-      <AdminLayout currentPage="dashboard" breadcrumbs={breadcrumbs}>
+      <DashboardLayout currentPage="dashboard" breadcrumbs={breadcrumbs}>
         <div className="dashboard-loading">
           <div className="loading-spinner"></div>
           <p>Loading dashboard...</p>
         </div>
-      </AdminLayout>
+      </DashboardLayout>
     )
   }
 
   return (
-    <AdminLayout currentPage="dashboard" breadcrumbs={breadcrumbs}>
+    <DashboardLayout currentPage="dashboard" breadcrumbs={breadcrumbs}>
       <div className="dashboard-overview">
         <div className="dashboard-header">
           <h1>Dashboard Overview</h1>
@@ -148,7 +148,7 @@ const DashboardOverview = () => {
         <div className="dashboard-section">
           <h2>Quick Actions</h2>
           <div className="quick-actions">
-            <Link to="/admin/events/create" className="action-card">
+            <Link to="/dashboard/events/create" className="action-card">
               <div className="action-icon">➕</div>
               <div className="action-content">
                 <h3>Create Event</h3>
@@ -156,7 +156,7 @@ const DashboardOverview = () => {
               </div>
             </Link>
 
-            <Link to="/admin/users" className="action-card">
+            <Link to="/dashboard/users" className="action-card">
               <div className="action-icon">👤</div>
               <div className="action-content">
                 <h3>Manage Users</h3>
@@ -164,7 +164,7 @@ const DashboardOverview = () => {
               </div>
             </Link>
 
-            <Link to="/admin/registrations" className="action-card">
+            <Link to="/dashboard/registrations" className="action-card">
               <div className="action-icon">📋</div>
               <div className="action-content">
                 <h3>View Registrations</h3>
@@ -238,7 +238,7 @@ const DashboardOverview = () => {
           </div>
         </div>
       </div>
-    </AdminLayout>
+    </DashboardLayout>
   )
 }
 

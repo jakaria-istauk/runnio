@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import api from '../../utils/api'
-import AdminLayout from '../../components/admin/AdminLayout'
+import DashboardLayout from '../../components/DashboardLayout'
 
 const EventManagement = () => {
   const [events, setEvents] = useState([])
@@ -46,26 +46,26 @@ const EventManagement = () => {
   }
 
   const breadcrumbs = [
-    { label: 'Dashboard', link: '/admin' },
+    { label: 'Dashboard', link: '/dashboard' },
     { label: 'Event Management' }
   ]
 
   if (loading) {
     return (
-      <AdminLayout currentPage="events" breadcrumbs={breadcrumbs}>
+      <DashboardLayout currentPage="events" breadcrumbs={breadcrumbs}>
         <div className="loading">Loading events...</div>
-      </AdminLayout>
+      </DashboardLayout>
     )
   }
 
   return (
-    <AdminLayout currentPage="events" breadcrumbs={breadcrumbs}>
+    <DashboardLayout currentPage="events" breadcrumbs={breadcrumbs}>
       <div className="page-header">
         <div className="header-content">
           <h1>Event Management</h1>
           <p>Manage running events and registrations</p>
         </div>
-        <Link to="/admin/events/create" className="btn btn-primary">
+        <Link to="/dashboard/events/create" className="btn btn-primary">
           <span className="btn-icon">➕</span>
           Create Event
         </Link>
@@ -112,7 +112,7 @@ const EventManagement = () => {
               
               <div style={{ display: 'flex', gap: '0.5rem', marginLeft: '1rem' }}>
                 <Link
-                  to={`/admin/events/${event.id}/edit`}
+                  to={`/dashboard/events/${event.id}/edit`}
                   className="btn btn-secondary"
                   style={{ padding: '5px 10px', fontSize: '12px' }}
                 >
@@ -136,7 +136,7 @@ const EventManagement = () => {
           </div>
         ))}
       </div>
-    </AdminLayout>
+    </DashboardLayout>
   )
 }
 

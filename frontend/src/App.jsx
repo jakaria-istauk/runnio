@@ -3,9 +3,7 @@ import Navbar from './components/Navbar'
 import HomePage from './pages/HomePage'
 import EventDetailPage from './pages/EventDetailPage'
 import LoginPage from './pages/LoginPage'
-import RegisterPage from './pages/RegisterPage'
 import UserDashboard from './pages/UserDashboard'
-import DashboardOverview from './pages/admin/DashboardOverview'
 import UserManagement from './pages/admin/UserManagement'
 import EventManagement from './pages/admin/EventManagement'
 import RegistrationManagement from './pages/admin/RegistrationManagement'
@@ -13,36 +11,27 @@ import ProtectedRoute from './components/ProtectedRoute'
 
 function AppContent() {
   const location = useLocation()
-  const isAdminRoute = location.pathname.startsWith('/admin')
+  const isDashboardRoute = location.pathname.startsWith('/dashboard')
 
   return (
     <div className="App">
-      {!isAdminRoute && <Navbar />}
+      {!isDashboardRoute && <Navbar />}
       <main>
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/events/:id" element={<EventDetailPage />} />
           <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
-          <Route 
-            path="/dashboard" 
+          <Route
+            path="/dashboard"
             element={
               <ProtectedRoute>
                 <UserDashboard />
               </ProtectedRoute>
-            } 
-          />
-          {/* Admin Routes */}
-          <Route
-            path="/admin"
-            element={
-              <ProtectedRoute requireAdmin>
-                <DashboardOverview />
-              </ProtectedRoute>
             }
           />
+          {/* Dashboard Routes */}
           <Route
-            path="/admin/users"
+            path="/dashboard/users"
             element={
               <ProtectedRoute requireAdmin>
                 <UserManagement />
@@ -50,7 +39,7 @@ function AppContent() {
             }
           />
           <Route
-            path="/admin/events"
+            path="/dashboard/events"
             element={
               <ProtectedRoute requireAdmin>
                 <EventManagement />
@@ -58,7 +47,7 @@ function AppContent() {
             }
           />
           <Route
-            path="/admin/registrations"
+            path="/dashboard/registrations"
             element={
               <ProtectedRoute requireAdmin>
                 <RegistrationManagement />

@@ -1,8 +1,8 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useAuth } from '../../contexts/AuthContext'
+import { useAuth } from '../contexts/AuthContext'
 
-const TopBar = ({ user, breadcrumbs, onToggleSidebar, sidebarCollapsed }) => {
+const DashboardTopBar = ({ user, breadcrumbs, onToggleSidebar, sidebarCollapsed }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const dropdownRef = useRef(null)
   const navigate = useNavigate()
@@ -29,7 +29,7 @@ const TopBar = ({ user, breadcrumbs, onToggleSidebar, sidebarCollapsed }) => {
   }
 
   return (
-    <header className={`admin-topbar ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
+    <header className={`dashboard-topbar ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
       <div className="topbar-left">
         <button 
           className="mobile-menu-toggle"
@@ -66,11 +66,11 @@ const TopBar = ({ user, breadcrumbs, onToggleSidebar, sidebarCollapsed }) => {
             aria-haspopup="true"
           >
             <div className="user-avatar">
-              {user?.name?.charAt(0).toUpperCase() || 'A'}
+              {user?.name?.charAt(0).toUpperCase() || 'U'}
             </div>
             <div className="user-info">
-              <span className="user-name">{user?.name || 'Admin'}</span>
-              <span className="user-role">{user?.role || 'Administrator'}</span>
+              <span className="user-name">{user?.name || 'User'}</span>
+              <span className="user-role">{user?.role === 'admin' ? 'Administrator' : 'User'}</span>
             </div>
             <span className="dropdown-arrow">▼</span>
           </button>
@@ -79,8 +79,8 @@ const TopBar = ({ user, breadcrumbs, onToggleSidebar, sidebarCollapsed }) => {
             <div className="user-dropdown">
               <div className="dropdown-header">
                 <div className="user-details">
-                  <strong>{user?.name || 'Admin User'}</strong>
-                  <small>{user?.email || 'admin@runnio.com'}</small>
+                  <strong>{user?.name || 'User'}</strong>
+                  <small>{user?.email || 'user@runnio.com'}</small>
                 </div>
               </div>
               
@@ -88,7 +88,7 @@ const TopBar = ({ user, breadcrumbs, onToggleSidebar, sidebarCollapsed }) => {
               
               <ul className="dropdown-menu">
                 <li>
-                  <button
+                  <button 
                     className="dropdown-item"
                     onClick={() => {
                       setDropdownOpen(false)
@@ -100,7 +100,7 @@ const TopBar = ({ user, breadcrumbs, onToggleSidebar, sidebarCollapsed }) => {
                   </button>
                 </li>
                 <li>
-                  <button
+                  <button 
                     className="dropdown-item"
                     onClick={() => {
                       setDropdownOpen(false)
@@ -108,32 +108,27 @@ const TopBar = ({ user, breadcrumbs, onToggleSidebar, sidebarCollapsed }) => {
                     }}
                   >
                     <span className="dropdown-icon">⚙️</span>
-                    System Settings
-                  </button>
-                </li>
-                <li>
-                  <button 
-                    className="dropdown-item"
-                    onClick={() => {
-                      setDropdownOpen(false)
-                      navigate('/dashboard')
-                    }}
-                  >
-                    <span className="dropdown-icon">🏠</span>
-                    User Dashboard
+                    Settings
                   </button>
                 </li>
               </ul>
               
               <div className="dropdown-divider"></div>
               
-              <button 
-                className="dropdown-item logout-item"
-                onClick={handleLogout}
-              >
-                <span className="dropdown-icon">🚪</span>
-                Logout
-              </button>
+              <ul className="dropdown-menu">
+                <li>
+                  <button 
+                    className="dropdown-item logout"
+                    onClick={() => {
+                      setDropdownOpen(false)
+                      handleLogout()
+                    }}
+                  >
+                    <span className="dropdown-icon">🚪</span>
+                    Logout
+                  </button>
+                </li>
+              </ul>
             </div>
           )}
         </div>
@@ -142,4 +137,4 @@ const TopBar = ({ user, breadcrumbs, onToggleSidebar, sidebarCollapsed }) => {
   )
 }
 
-export default TopBar
+export default DashboardTopBar
