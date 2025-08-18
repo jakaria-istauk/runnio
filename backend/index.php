@@ -82,7 +82,22 @@ try {
             $_GET['registration_id'] = $matches[1];
             require_once __DIR__ . '/api/logs/create.php';
             break;
-            
+
+        // User management routes (Admin only)
+        case $path === '/users' && $method === 'GET':
+            require_once __DIR__ . '/api/users/list.php';
+            break;
+
+        case preg_match('/^\/users\/(\d+)$/', $path, $matches) && $method === 'PUT':
+            $_GET['id'] = $matches[1];
+            require_once __DIR__ . '/api/users/update.php';
+            break;
+
+        case preg_match('/^\/users\/(\d+)$/', $path, $matches) && $method === 'DELETE':
+            $_GET['id'] = $matches[1];
+            require_once __DIR__ . '/api/users/delete.php';
+            break;
+
         default:
             // Check if this is an API route that doesn't exist
             if (strpos($path, '/') === 0 && $path !== '/') {
@@ -318,6 +333,13 @@ function serveWebUI() {
                 <code>POST /api/events/{id}/register</code> - Register for event<br>
                 <code>GET /api/users/{id}/registrations</code> - User registrations<br>
                 <code>GET /api/registrations</code> - List all registrations
+            </div>
+
+            <div class="endpoint">
+                <strong>Users</strong><br>
+                <code>GET /api/users</code> - List all users (Admin)<br>
+                <code>PUT /api/users/{id}</code> - Update user (Admin)<br>
+                <code>DELETE /api/users/{id}</code> - Delete user (Admin)
             </div>
 
             <div class="endpoint">

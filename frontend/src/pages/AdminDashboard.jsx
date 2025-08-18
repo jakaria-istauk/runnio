@@ -19,16 +19,17 @@ const AdminDashboard = () => {
 
   const fetchStats = async () => {
     try {
-      // This would ideally be a single stats endpoint, but we'll simulate with existing endpoints
-      const [eventsRes, registrationsRes] = await Promise.all([
+      // Fetch stats from multiple endpoints
+      const [eventsRes, registrationsRes, usersRes] = await Promise.all([
         api.get('/events?limit=1'),
-        api.get('/registrations?limit=1')
+        api.get('/registrations?limit=1'),
+        api.get('/users?limit=1')
       ])
-      
+
       setStats({
         totalEvents: eventsRes.data.data.pagination.total,
         totalRegistrations: registrationsRes.data.data.pagination.total,
-        totalUsers: 0 // Would need a users endpoint
+        totalUsers: usersRes.data.data.pagination.total
       })
     } catch (err) {
       console.error('Failed to fetch stats:', err)
@@ -111,6 +112,21 @@ const AdminDashboard = () => {
           </button>
           
           <button
+            onClick={() => setActiveTab('users')}
+            style={{
+              padding: '10px 20px',
+              border: 'none',
+              background: 'none',
+              borderBottom: activeTab === 'users' ? '2px solid #007bff' : 'none',
+              color: activeTab === 'users' ? '#007bff' : '#666',
+              fontWeight: activeTab === 'users' ? 'bold' : 'normal',
+              cursor: 'pointer'
+            }}
+          >
+            Users Management
+          </button>
+
+          <button
             onClick={() => setActiveTab('create')}
             style={{
               padding: '10px 20px',
@@ -129,6 +145,7 @@ const AdminDashboard = () => {
         {/* Tab Content */}
         {activeTab === 'events' && <EventsManagement />}
         {activeTab === 'registrations' && <RegistrationsManagement />}
+        {activeTab === 'users' && <UsersManagement />}
         {activeTab === 'create' && <CreateEvent onEventCreated={() => setActiveTab('events')} />}
       </div>
     </div>
@@ -600,6 +617,267 @@ const CreateEvent = ({ onEventCreated }) => {
           {loading ? 'Creating Event...' : 'Create Event'}
         </button>
       </form>
+    </div>
+  )
+}
+
+const UsersManagement = () => {
+  const [users, setUsers] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+  const [editingUser, setEditingUser] = useState(null)
+  const [filters, setFilters] = useState({
+    search: '',
+    role: ''
+  })
+
+  useEffect(() => {
+    fetchUsers()
+  }, [filters])
+
+  const fetchUsers = async () => {
+    try {
+      setLoading(true)
+      const params = new URLSearchParams({
+        limit: 50,
+        ...Object.fromEntries(Object.entries(filters).filter(([_, v]) => v))
+      })
+
+      const response = await api.get(`/users?${params}`)
+      setUsers(response.data.data.users)
+    } catch (err) {
+      setError('Failed to load users')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleDeleteUser = async (userId) => {
+    const user = users.find(u => u.id === userId)
+    if (!confirm(`Are you sure you want to delete user "${user.name}"? This will also delete all their registrations and logs.`)) {
+      return
+    }
+
+    try {
+      await api.delete(`/users/${userId}`)
+      setUsers(users.filter(u => u.id !== userId))
+    } catch (err) {
+      alert(err.response?.data?.message || 'Failed to delete user')
+    }
+  }
+
+  const handleEditUser = (user) => {
+    setEditingUser({
+      ...user,
+      password: '' // Don't pre-fill password
+    })
+  }
+
+  const handleUpdateUser = async (e) => {
+    e.preventDefault()
+
+    try {
+      const updateData = {
+        name: editingUser.name,
+        email: editingUser.email,
+        role: editingUser.role
+      }
+
+      // Only include password if it's provided
+      if (editingUser.password) {
+        updateData.password = editingUser.password
+      }
+
+      const response = await api.put(`/users/${editingUser.id}`, updateData)
+
+      // Update the user in the list
+      setUsers(users.map(u => u.id === editingUser.id ? response.data.data.user : u))
+      setEditingUser(null)
+    } catch (err) {
+      alert(err.response?.data?.message || 'Failed to update user')
+    }
+  }
+
+  if (loading) {
+    return <div className="loading">Loading users...</div>
+  }
+
+  return (
+    <div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+        <h3>Users Management</h3>
+        <span style={{ color: '#666' }}>{users.length} users total</span>
+      </div>
+
+      {error && (
+        <div className="alert alert-error" style={{ marginBottom: '1rem' }}>
+          {error}
+        </div>
+      )}
+
+      {/* Filters */}
+      <div className="card" style={{ marginBottom: '1rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
+          <div className="form-group">
+            <label>Search Users</label>
+            <input
+              type="text"
+              placeholder="Search by name or email..."
+              value={filters.search}
+              onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Filter by Role</label>
+            <select
+              value={filters.role}
+              onChange={(e) => setFilters(prev => ({ ...prev, role: e.target.value }))}
+            >
+              <option value="">All Roles</option>
+              <option value="user">Users</option>
+              <option value="admin">Admins</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      {/* Users List */}
+      <div style={{ display: 'grid', gap: '1rem' }}>
+        {users.map(user => (
+          <div key={user.id} className="card">
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', alignItems: 'center' }}>
+              <div>
+                <strong>👤 Name:</strong> {user.name}
+              </div>
+
+              <div>
+                <strong>📧 Email:</strong> {user.email}
+              </div>
+
+              <div>
+                <strong>🔑 Role:</strong>
+                <span style={{
+                  color: user.role === 'admin' ? '#dc3545' : '#28a745',
+                  fontWeight: 'bold',
+                  marginLeft: '0.5rem'
+                }}>
+                  {user.role === 'admin' ? '👨‍💼 Admin' : '👤 User'}
+                </span>
+              </div>
+
+              <div>
+                <strong>📊 Registrations:</strong> {user.registrations_count}
+              </div>
+
+              <div>
+                <strong>📅 Joined:</strong> {formatDate(user.created_at)}
+              </div>
+
+              <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <button
+                  onClick={() => handleEditUser(user)}
+                  className="btn btn-secondary"
+                  style={{ padding: '5px 10px', fontSize: '12px' }}
+                >
+                  ✏️ Edit
+                </button>
+
+                <button
+                  onClick={() => handleDeleteUser(user.id)}
+                  className="btn"
+                  style={{
+                    padding: '5px 10px',
+                    fontSize: '12px',
+                    backgroundColor: '#dc3545',
+                    color: 'white'
+                  }}
+                >
+                  🗑️ Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Edit User Modal */}
+      {editingUser && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0,0,0,0.5)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000
+        }}>
+          <div className="card" style={{ width: '90%', maxWidth: '500px', margin: 0 }}>
+            <h4 style={{ marginBottom: '1rem' }}>Edit User</h4>
+
+            <form onSubmit={handleUpdateUser}>
+              <div className="form-group">
+                <label>Name</label>
+                <input
+                  type="text"
+                  value={editingUser.name}
+                  onChange={(e) => setEditingUser(prev => ({ ...prev, name: e.target.value }))}
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Email</label>
+                <input
+                  type="email"
+                  value={editingUser.email}
+                  onChange={(e) => setEditingUser(prev => ({ ...prev, email: e.target.value }))}
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Role</label>
+                <select
+                  value={editingUser.role}
+                  onChange={(e) => setEditingUser(prev => ({ ...prev, role: e.target.value }))}
+                  required
+                >
+                  <option value="user">User</option>
+                  <option value="admin">Admin</option>
+                </select>
+              </div>
+
+              <div className="form-group">
+                <label>New Password (leave blank to keep current)</label>
+                <input
+                  type="password"
+                  value={editingUser.password}
+                  onChange={(e) => setEditingUser(prev => ({ ...prev, password: e.target.value }))}
+                  placeholder="Enter new password or leave blank"
+                />
+              </div>
+
+              <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}>
+                <button
+                  type="button"
+                  onClick={() => setEditingUser(null)}
+                  className="btn btn-secondary"
+                >
+                  Cancel
+                </button>
+
+                <button type="submit" className="btn">
+                  Update User
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
