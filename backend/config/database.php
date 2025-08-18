@@ -1,7 +1,7 @@
 <?php
 /**
  * Database Configuration
- * Running Events Management System
+ * Runnio - Running Events Management System
  */
 
 class Database {

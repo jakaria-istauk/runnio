@@ -14,77 +14,78 @@ Response::cors();
 $method = $_SERVER['REQUEST_METHOD'];
 $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $path = str_replace('/backend', '', $path); // Remove backend prefix if present
+$path = str_replace('/api', '', $path); // Remove api prefix if present
 
 // Route the request
 try {
     switch (true) {
         // Health check endpoint
-        case $path === '/api/health' && $method === 'GET':
+        case $path === '/health' && $method === 'GET':
             require_once __DIR__ . '/api/health.php';
             break;
 
         // Authentication routes
-        case $path === '/api/register' && $method === 'POST':
+        case $path === '/auth/register' && $method === 'POST':
             require_once __DIR__ . '/api/auth/register.php';
             break;
 
-        case $path === '/api/login' && $method === 'POST':
+        case $path === '/auth/login' && $method === 'POST':
             require_once __DIR__ . '/api/auth/login.php';
             break;
             
         // Events routes
-        case $path === '/api/events' && $method === 'GET':
+        case $path === '/events' && $method === 'GET':
             require_once __DIR__ . '/api/events/list.php';
             break;
-            
-        case preg_match('/^\/api\/events\/(\d+)$/', $path, $matches) && $method === 'GET':
+
+        case preg_match('/^\/events\/(\d+)$/', $path, $matches) && $method === 'GET':
             $_GET['id'] = $matches[1];
             require_once __DIR__ . '/api/events/get.php';
             break;
-            
-        case $path === '/api/events' && $method === 'POST':
+
+        case $path === '/events' && $method === 'POST':
             require_once __DIR__ . '/api/events/create.php';
             break;
-            
-        case preg_match('/^\/api\/events\/(\d+)$/', $path, $matches) && $method === 'PUT':
+
+        case preg_match('/^\/events\/(\d+)$/', $path, $matches) && $method === 'PUT':
             $_GET['id'] = $matches[1];
             require_once __DIR__ . '/api/events/update.php';
             break;
-            
-        case preg_match('/^\/api\/events\/(\d+)$/', $path, $matches) && $method === 'DELETE':
+
+        case preg_match('/^\/events\/(\d+)$/', $path, $matches) && $method === 'DELETE':
             $_GET['id'] = $matches[1];
             require_once __DIR__ . '/api/events/delete.php';
             break;
             
         // Registration routes
-        case preg_match('/^\/api\/events\/(\d+)\/register$/', $path, $matches) && $method === 'POST':
+        case preg_match('/^\/events\/(\d+)\/register$/', $path, $matches) && $method === 'POST':
             $_GET['event_id'] = $matches[1];
             require_once __DIR__ . '/api/registrations/register.php';
             break;
-            
-        case preg_match('/^\/api\/users\/(\d+)\/registrations$/', $path, $matches) && $method === 'GET':
+
+        case preg_match('/^\/users\/(\d+)\/registrations$/', $path, $matches) && $method === 'GET':
             $_GET['user_id'] = $matches[1];
             require_once __DIR__ . '/api/registrations/user_registrations.php';
             break;
-            
-        case $path === '/api/registrations' && $method === 'GET':
+
+        case $path === '/registrations' && $method === 'GET':
             require_once __DIR__ . '/api/registrations/list.php';
             break;
-            
+
         // User logs routes
-        case preg_match('/^\/api\/registrations\/(\d+)\/logs$/', $path, $matches) && $method === 'GET':
+        case preg_match('/^\/registrations\/(\d+)\/logs$/', $path, $matches) && $method === 'GET':
             $_GET['registration_id'] = $matches[1];
             require_once __DIR__ . '/api/logs/get.php';
             break;
-            
-        case preg_match('/^\/api\/registrations\/(\d+)\/logs$/', $path, $matches) && $method === 'POST':
+
+        case preg_match('/^\/registrations\/(\d+)\/logs$/', $path, $matches) && $method === 'POST':
             $_GET['registration_id'] = $matches[1];
             require_once __DIR__ . '/api/logs/create.php';
             break;
             
         default:
             // Check if this is an API route that doesn't exist
-            if (strpos($path, '/api/') === 0) {
+            if (strpos($path, '/') === 0 && $path !== '/') {
                 Response::notFound('Endpoint not found');
             } else {
                 // Serve the web UI for non-API routes

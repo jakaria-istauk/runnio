@@ -54,7 +54,7 @@ php database/setup.php
 ```
 
 This will create all necessary tables and insert sample data including:
-- Admin user: `admin@runningevents.com` / `admin123`
+- Admin user: `admin@runnio.com` / `admin123`
 - Sample users: `john@example.com` / `user123`
 - Sample events with different types and distances
 
@@ -94,7 +94,7 @@ Open your browser and go to `http://localhost:3000`
 ### 2. Test User Accounts
 
 **Admin Account:**
-- Email: `admin@runningevents.com`
+- Email: `admin@runnio.com`
 - Password: `admin123`
 - Can create, edit, delete events and view all registrations
 

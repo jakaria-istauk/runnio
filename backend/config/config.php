@@ -1,7 +1,7 @@
 <?php
 /**
  * Application Configuration
- * Running Events Management System
+ * Runnio - Running Events Management System
  */
 
 // Load environment variables
@@ -17,7 +17,7 @@ if (file_exists(__DIR__ . '/../.env')) {
 }
 
 // Application settings
-define('APP_NAME', 'Running Events Management');
+define('APP_NAME', 'Runnio');
 define('APP_VERSION', '1.0.0');
 define('APP_ENV', $_ENV['APP_ENV'] ?? 'development');
 

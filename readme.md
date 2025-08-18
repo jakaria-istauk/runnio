@@ -143,8 +143,8 @@ php -S localhost:8000
 **Environment Configuration:**
 ```env
 DB_HOST=localhost
-DB_NAME=running_events
-DB_USER=running_user
+DB_NAME=runnio
+DB_USER=runnio_user
 DB_PASS=your_password
 JWT_SECRET=your-very-secure-secret-key
 ```
@@ -186,7 +186,7 @@ After setup, verify everything works:
 
 | Role | Email | Password | Capabilities |
 |------|-------|----------|--------------|
-| 👨‍💼 **Admin** | `admin@runningevents.com` | `admin123` | Full system access |
+| 👨‍💼 **Admin** | `admin@runnio.com` | `admin123` | Full system access |
 | 👤 **User** | `john@example.com` | `user123` | Event registration & results |
 
 </div>
