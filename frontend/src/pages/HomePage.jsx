@@ -71,10 +71,10 @@ const HomePage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="container py-8">
+      <div className="container pt-6 pb-8">
         {/* Minimal Filter Section */}
-        <div className="card mb-8">
-          <div className="flex items-center gap-4">
+        <div className="card mb-6">
+          <div className="flex items-center gap-3">
             {/* Search Input - Always Visible */}
             <div className="flex-1">
               <input
@@ -226,7 +226,7 @@ const EventCard = ({ event }) => {
         {/* Badges Overlay */}
         <div className="absolute top-4 left-4 flex flex-wrap gap-2">
           <span className={`event-badge ${event.type === 'virtual' ? 'event-badge-virtual' : 'event-badge-onsite'}`}>
-            <Icon name={event.type === 'virtual' ? 'activity' : 'map-pin'} size={14} className="mr-1" />
+            <Icon name={event.type === 'virtual' ? 'external-link' : 'map-pin'} size={14} className="mr-1" />
             {event.type === 'virtual' ? 'Virtual' : 'On-site'}
           </span>
 
@@ -280,7 +280,7 @@ const EventCard = ({ event }) => {
             </div>
 
             <div className="flex items-center gap-2">
-              <Icon name="clock" size={16} className="text-gray-500" />
+              <Icon name={registrationOpen ? "check-circle" : "x-circle"} size={16} className={registrationOpen ? "text-green-500" : "text-red-500"} />
               <span className="truncate">
                 {registrationOpen
                   ? `Until ${formatDate(event.registration_deadline)}`
