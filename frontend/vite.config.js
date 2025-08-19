@@ -10,6 +10,17 @@ export default defineConfig(({ mode }) => {
 
   return {
     plugins: [react()],
+    build: {
+      outDir: '../backend/dist',
+      emptyOutDir: true,
+      rollupOptions: {
+        output: {
+          manualChunks: undefined,
+          assetFileNames: 'assets/[name][extname]',
+          entryFileNames: 'assets/index.js',
+        }
+      },
+    },
     server: {
       port: 3000,
       ...(useProxy && {
@@ -17,7 +28,7 @@ export default defineConfig(({ mode }) => {
           '/api': {
             target: 'http://runnio.test',
             changeOrigin: true,
-            rewrite: (path) => path.replace(/^\/api/, '/backend/api')
+            rewrite: (path) => path.replace(/^\/api/, '/app/api')
           }
         }
       })

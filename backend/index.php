@@ -104,7 +104,11 @@ try {
                 Response::notFound('Endpoint not found');
             } else {
                 // Serve the web UI for non-API routes
-                serveWebUI();
+                if( file_exists( __DIR__ . '/dist/assets/index.js' ) ) {
+                    reactApp();
+                } else {
+                    serveWebUI();
+                }
             }
     }
 } catch (Exception $e) {
@@ -357,4 +361,23 @@ function serveWebUI() {
 </html>
     <?php
     exit();
+}
+
+function reactApp() {
+    ?>
+    <!doctype html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <link rel="icon" type="image/x-icon" href="./dist/assets/favicon.ico" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Runnio</title>
+        <link rel="stylesheet" href="./dist/assets/index.css">
+        <script type="module" src="./dist/assets/index.js"></script>
+    </head>
+    <body>
+        <div id="root"></div>
+    </body>
+    </html>
+    <?php
 }
