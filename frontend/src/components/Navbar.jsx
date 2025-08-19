@@ -12,6 +12,9 @@ const Navbar = () => {
 
   return (
     <nav style={{
+      position: 'sticky',
+      top: 0,
+      zIndex: 50,
       background: '#fff',
       boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
       padding: '1rem 0',

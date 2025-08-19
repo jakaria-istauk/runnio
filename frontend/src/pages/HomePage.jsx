@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import api from '../utils/api'
-import { formatDate, formatDateTime, isEventUpcoming, isRegistrationOpen } from '../utils/dateUtils'
+import { formatDate, formatDateTime, isRegistrationOpen } from '../utils/dateUtils'
+import Icon from '../components/Icon'
 
 const HomePage = () => {
   const [events, setEvents] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [showFilters, setShowFilters] = useState(false)
   const [filters, setFilters] = useState({
     search: '',
     type: '',
@@ -70,19 +72,11 @@ const HomePage = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container py-8">
-        <div className="page-header">
-          <div className="header-content">
-            <h1>Running Events</h1>
-            <p>Discover and register for exciting running events in your area</p>
-          </div>
-        </div>
-
-        {/* Filters */}
+        {/* Minimal Filter Section */}
         <div className="card mb-8">
-          <h3 className="text-lg font-semibold text-gray-900 mb-6">Filter Events</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="form-group">
-              <label className="form-label">Search</label>
+          <div className="flex items-center gap-4">
+            {/* Search Input - Always Visible */}
+            <div className="flex-1">
               <input
                 type="text"
                 className="form-input"
@@ -92,54 +86,71 @@ const HomePage = () => {
               />
             </div>
 
-            <div className="form-group">
-              <label className="form-label">Event Type</label>
-              <select
-                className="form-input"
-                value={filters.type}
-                onChange={(e) => handleFilterChange('type', e.target.value)}
-              >
-                <option value="">All Types</option>
-                <option value="virtual">Virtual</option>
-                <option value="onsite">On-site</option>
-              </select>
-            </div>
+            {/* Filter Toggle Button */}
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className="btn btn-secondary flex items-center gap-2"
+              aria-label="Toggle filters"
+            >
+              <Icon name="filter" size={16} />
+              Filters
+            </button>
+          </div>
 
-            <div className="form-group">
-              <label className="form-label">Location</label>
-              <input
-                type="text"
-                className="form-input"
-                placeholder="Enter location..."
-                value={filters.location}
-                onChange={(e) => handleFilterChange('location', e.target.value)}
-              />
-            </div>
-
-            <div className="form-group lg:col-span-2">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="form-label">From Date</label>
-                  <input
-                    type="date"
+          {/* Collapsible Filter Options */}
+          {showFilters && (
+            <div className="mt-6 pt-6 border-t border-gray-200">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="form-group">
+                  <label className="form-label">Event Type</label>
+                  <select
                     className="form-input"
-                    value={filters.date_from}
-                    onChange={(e) => handleFilterChange('date_from', e.target.value)}
+                    value={filters.type}
+                    onChange={(e) => handleFilterChange('type', e.target.value)}
+                  >
+                    <option value="">All Types</option>
+                    <option value="virtual">Virtual</option>
+                    <option value="onsite">On-site</option>
+                  </select>
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">Location</label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    placeholder="Enter location..."
+                    value={filters.location}
+                    onChange={(e) => handleFilterChange('location', e.target.value)}
                   />
                 </div>
 
-                <div>
-                  <label className="form-label">To Date</label>
-                  <input
-                    type="date"
-                    className="form-input"
-                    value={filters.date_to}
-                    onChange={(e) => handleFilterChange('date_to', e.target.value)}
-                  />
+                <div className="form-group lg:col-span-2">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="form-label">From Date</label>
+                      <input
+                        type="date"
+                        className="form-input"
+                        value={filters.date_from}
+                        onChange={(e) => handleFilterChange('date_from', e.target.value)}
+                      />
+                    </div>
+
+                    <div>
+                      <label className="form-label">To Date</label>
+                      <input
+                        type="date"
+                        className="form-input"
+                        value={filters.date_to}
+                        onChange={(e) => handleFilterChange('date_to', e.target.value)}
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
 
         {error && (
@@ -193,7 +204,6 @@ const HomePage = () => {
 }
 
 const EventCard = ({ event }) => {
-  const upcoming = isEventUpcoming(event.event_date)
   const registrationOpen = isRegistrationOpen(event.registration_deadline)
   const isRegistered = event.is_registered === 1
 
@@ -216,12 +226,14 @@ const EventCard = ({ event }) => {
         {/* Badges Overlay */}
         <div className="absolute top-4 left-4 flex flex-wrap gap-2">
           <span className={`event-badge ${event.type === 'virtual' ? 'event-badge-virtual' : 'event-badge-onsite'}`}>
-            {event.type === 'virtual' ? '💻 Virtual' : '📍 On-site'}
+            <Icon name={event.type === 'virtual' ? 'activity' : 'map-pin'} size={14} className="mr-1" />
+            {event.type === 'virtual' ? 'Virtual' : 'On-site'}
           </span>
 
           {isRegistered && (
             <span className="event-badge event-badge-registered">
-              ✅ Registered
+              <Icon name="check-circle" size={14} className="mr-1" />
+              Registered
             </span>
           )}
         </div>
@@ -236,7 +248,7 @@ const EventCard = ({ event }) => {
 
       {/* Card Content */}
       <div className="event-card-content">
-        <div className="flex justify-between items-start mb-3">
+        <div className="mb-4">
           <Link
             to={`/events/${event.id}`}
             className="event-card-title hover:text-primary-600 transition-colors"
@@ -245,36 +257,37 @@ const EventCard = ({ event }) => {
           </Link>
         </div>
 
-        <p className="event-card-description">
-          {event.description}
-        </p>
-
-        <div className="event-card-meta">
-          <div className="event-card-meta-item">
-            <span className="text-lg">📅</span>
-            <span>{formatDateTime(event.event_date)}</span>
-          </div>
-
-          {event.location && (
-            <div className="event-card-meta-item">
-              <span className="text-lg">📍</span>
-              <span className="truncate">{event.location}</span>
+        {/* Inline Event Metadata */}
+        <div className="space-y-3 mb-6">
+          <div className="flex items-center gap-6 text-sm text-gray-600 flex-wrap">
+            <div className="flex items-center gap-2">
+              <Icon name="calendar" size={16} className="text-gray-500" />
+              <span>{formatDateTime(event.event_date)}</span>
             </div>
-          )}
 
-          <div className="event-card-meta-item">
-            <span className="text-lg">🏃‍♂️</span>
-            <span>{event.distances.join(', ')}</span>
+            {event.location && (
+              <div className="flex items-center gap-2">
+                <Icon name="map-pin" size={16} className="text-gray-500" />
+                <span className="truncate">{event.location}</span>
+              </div>
+            )}
           </div>
 
-          <div className="event-card-meta-item">
-            <span className="text-lg">📝</span>
-            <span className="truncate">
-              {registrationOpen
-                ? `Until ${formatDate(event.registration_deadline)}`
-                : 'Registration Closed'
-              }
-            </span>
+          <div className="flex items-center gap-6 text-sm text-gray-600 flex-wrap">
+            <div className="flex items-center gap-2">
+              <span className="text-lg">🏃‍♂️</span>
+              <span>{event.distances.join(', ')}</span>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <Icon name="clock" size={16} className="text-gray-500" />
+              <span className="truncate">
+                {registrationOpen
+                  ? `Until ${formatDate(event.registration_deadline)}`
+                  : 'Registration Closed'
+                }
+              </span>
+            </div>
           </div>
         </div>
 
@@ -284,7 +297,7 @@ const EventCard = ({ event }) => {
             to={`/events/${event.id}`}
             className="btn btn-primary w-full justify-center"
           >
-            {isRegistered ? 'View Details' : 'Learn More'}
+            View Details
           </Link>
         </div>
       </div>
