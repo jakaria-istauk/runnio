@@ -21,7 +21,9 @@ function runMigrations() {
         '003_create_event_meta_table.sql',
         '004_create_registrations_table.sql',
         '005_create_user_logs_table.sql',
-        '006_insert_sample_data.sql'
+        '006_insert_sample_data.sql',
+        '007_add_cover_image_to_events.sql',
+        '007_insert_bangladesh_sample_data.sql'
     ];
     
     echo "Running database migrations...\n";

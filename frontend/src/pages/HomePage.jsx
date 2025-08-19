@@ -198,7 +198,7 @@ const EventCard = ({ event }) => {
   const isRegistered = event.is_registered === 1
 
   // Default cover image if none provided
-  const coverImage = event.cover_image || `https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=200&fit=crop&auto=format`
+  const coverImage = event.cover_image || `https://images.unsplash.com/photo-1452626038306-9aae5e071dd3?w=400&h=200&fit=crop&auto=format`
 
   return (
     <div className="event-card group">
@@ -209,7 +209,7 @@ const EventCard = ({ event }) => {
           alt={event.name}
           className="event-card-image group-hover:scale-105 transition-transform duration-300"
           onError={(e) => {
-            e.target.src = `https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=200&fit=crop&auto=format`
+            e.target.src = `https://images.unsplash.com/photo-1452626038306-9aae5e071dd3?w=400&h=200&fit=crop&auto=format`
           }}
         />
 
