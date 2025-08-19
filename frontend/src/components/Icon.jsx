@@ -1,8 +1,9 @@
 // Icon component that provides a consistent icon system
 // This component can work with or without react-icons library
-// If react-icons is available, it uses SVG icons, otherwise falls back to Unicode symbols
+// If react-icons is available, it uses SVG icons, otherwise falls back to our custom SVG icons
 
 import React from 'react'
+import * as CustomIcons from './icons'
 
 // Try to import react-icons, fall back to null if not available
 let ReactIcons = null
@@ -71,68 +72,70 @@ try {
   ReactIcons = null
 }
 
-// Fallback icon mapping using Unicode symbols
-const fallbackIcons = {
+// Fallback icon mapping using our custom SVG icons
+const fallbackIconMapping = {
   // Dashboard and Navigation
-  home: '🏠',
-  user: '👤',
-  users: '👥',
-  settings: '⚙️',
-  menu: '☰',
-  close: '✕',
-  'chevron-down': '▼',
-  'chevron-right': '▶',
-  logout: '🚪',
-  
+  home: 'Home',
+  user: 'User',
+  users: 'Users',
+  settings: 'Settings',
+  menu: 'Menu',
+  close: 'X',
+  'chevron-down': 'ChevronDown',
+  'chevron-right': 'ChevronRight',
+  'chevron-left': 'ChevronLeft',
+  logout: 'LogOut',
+
   // Events and Activities
-  calendar: '📅',
-  'map-pin': '📍',
-  clock: '🕐',
-  activity: '📊',
-  'trending-up': '📈',
-  
+  calendar: 'Calendar',
+  'map-pin': 'MapPin',
+  clock: 'Clock',
+  activity: 'Activity',
+  'trending-up': 'TrendingUp',
+  'trending-down': 'TrendingDown',
+
   // Actions
-  plus: '➕',
-  edit: '✏️',
-  trash: '🗑️',
-  eye: '👁️',
-  download: '⬇️',
-  upload: '⬆️',
-  save: '💾',
-  
+  plus: 'Plus',
+  edit: 'Edit',
+  trash: 'Trash',
+  eye: 'Eye',
+  download: 'Download',
+  upload: 'Upload',
+  save: 'Save',
+
   // Status and Feedback
-  check: '✓',
-  'check-circle': '✅',
-  'alert-circle': '⚠️',
-  info: 'ℹ️',
-  'x-circle': '❌',
-  
+  check: 'Check',
+  'check-circle': 'CheckCircle',
+  'alert-circle': 'AlertTriangle',
+  info: 'AlertTriangle',
+  'x-circle': 'XCircle',
+
   // Communication
-  mail: '📧',
-  phone: '📞',
-  bell: '🔔',
-  'message-square': '💬',
-  
+  mail: 'MessageCircle',
+  phone: 'MessageCircle',
+  bell: 'Bell',
+  'message-square': 'MessageCircle',
+
   // Data and Analytics
-  'bar-chart': '📊',
-  'pie-chart': '📈',
-  database: '🗄️',
-  'file-text': '📄',
-  
+  'bar-chart': 'BarChart',
+  'pie-chart': 'TrendingUp',
+  database: 'Folder',
+  'file-text': 'FileText',
+
   // Utility
-  search: '🔍',
-  filter: '🔽',
-  refresh: '🔄',
-  'more-horizontal': '⋯',
-  'external-link': '🔗',
-  
+  search: 'Search',
+  filter: 'ArrowUpDown',
+  refresh: 'ArrowUpDown',
+  'more-horizontal': 'Menu',
+  'external-link': 'Paperclip',
+
   // Sports specific
-  target: '🎯',
-  award: '🏆',
-  flag: '🏁',
-  runner: '🏃‍♂️',
-  medal: '🥇',
-  stopwatch: '⏱️',
+  target: 'Activity',
+  award: 'Activity',
+  flag: 'Activity',
+  runner: '🏃‍♂️', // Keep the running emoji as specified
+  medal: 'Activity',
+  stopwatch: 'Clock',
 }
 
 // Icon name to react-icons component mapping
@@ -199,13 +202,13 @@ const reactIconMapping = {
   stopwatch: 'FiClock', // Using clock icon for stopwatch
 }
 
-const Icon = ({ 
-  name, 
-  size = 16, 
-  color = 'currentColor', 
-  className = '', 
+const Icon = ({
+  name,
+  size = 16,
+  color = 'currentColor',
+  className = '',
   style = {},
-  ...props 
+  ...props
 }) => {
   // If react-icons is available, use SVG icons
   if (ReactIcons && reactIconMapping[name]) {
@@ -222,10 +225,43 @@ const Icon = ({
       )
     }
   }
-  
-  // Fallback to Unicode symbols
-  const fallbackIcon = fallbackIcons[name] || '?'
-  
+
+  // Fallback to our custom SVG icons
+  const fallbackIconName = fallbackIconMapping[name]
+  if (fallbackIconName) {
+    // Special case for runner emoji - keep as is
+    if (fallbackIconName === '🏃‍♂️') {
+      return (
+        <span
+          className={`icon ${className}`}
+          style={{
+            fontSize: `${size}px`,
+            color,
+            lineHeight: 1,
+            display: 'inline-block',
+            ...style
+          }}
+          {...props}
+        >
+          🏃‍♂️
+        </span>
+      )
+    }
+
+    // Use custom SVG icon
+    const CustomIconComponent = CustomIcons[fallbackIconName]
+    if (CustomIconComponent) {
+      return (
+        <CustomIconComponent
+          className={`${className} w-${Math.ceil(size/4)} h-${Math.ceil(size/4)}`}
+          style={{ color, ...style }}
+          {...props}
+        />
+      )
+    }
+  }
+
+  // Final fallback to question mark
   return (
     <span
       className={`icon ${className}`}
@@ -238,7 +274,7 @@ const Icon = ({
       }}
       {...props}
     >
-      {fallbackIcon}
+      ?
     </span>
   )
 }

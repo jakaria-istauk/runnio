@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import api from '../../utils/api'
 import DashboardLayout from '../../components/DashboardLayout'
+import { Users, FileText, Plus, User } from '../../components/icons'
 
 
 const DashboardOverview = () => {
@@ -117,7 +118,9 @@ const DashboardOverview = () => {
           </div>
 
           <div className="stat-card success">
-            <div className="stat-icon">👥</div>
+            <div className="stat-icon">
+              <Users className="w-8 h-8" />
+            </div>
             <div className="stat-content">
               <h3>{stats.totalUsers}</h3>
               <p>Total Users</p>
@@ -126,7 +129,9 @@ const DashboardOverview = () => {
           </div>
 
           <div className="stat-card warning">
-            <div className="stat-icon">📝</div>
+            <div className="stat-icon">
+              <FileText className="w-8 h-8" />
+            </div>
             <div className="stat-content">
               <h3>{stats.totalRegistrations}</h3>
               <p>Total Registrations</p>
@@ -149,7 +154,9 @@ const DashboardOverview = () => {
           <h2>Quick Actions</h2>
           <div className="quick-actions">
             <Link to="/dashboard/events/create" className="action-card">
-              <div className="action-icon">➕</div>
+              <div className="action-icon">
+                <Plus className="w-6 h-6" />
+              </div>
               <div className="action-content">
                 <h3>Create Event</h3>
                 <p>Add a new running event</p>
@@ -157,7 +164,9 @@ const DashboardOverview = () => {
             </Link>
 
             <Link to="/dashboard/users" className="action-card">
-              <div className="action-icon">👤</div>
+              <div className="action-icon">
+                <User className="w-6 h-6" />
+              </div>
               <div className="action-content">
                 <h3>Manage Users</h3>
                 <p>View and edit user accounts</p>
@@ -165,7 +174,9 @@ const DashboardOverview = () => {
             </Link>
 
             <Link to="/dashboard/registrations" className="action-card">
-              <div className="action-icon">📋</div>
+              <div className="action-icon">
+                <FileText className="w-6 h-6" />
+              </div>
               <div className="action-content">
                 <h3>View Registrations</h3>
                 <p>Monitor event registrations</p>

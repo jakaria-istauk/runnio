@@ -1,4 +1,5 @@
 import { Link, useLocation } from 'react-router-dom'
+import { BarChart, Users, FileText, Settings } from '../icons'
 
 const Sidebar = ({ collapsed, onToggle, currentPage }) => {
   const location = useLocation()
@@ -7,7 +8,7 @@ const Sidebar = ({ collapsed, onToggle, currentPage }) => {
     {
       id: 'dashboard',
       label: 'Dashboard',
-      icon: '📊',
+      icon: <BarChart className="w-5 h-5" />,
       path: '/dashboard',
       exact: true
     },
@@ -20,19 +21,19 @@ const Sidebar = ({ collapsed, onToggle, currentPage }) => {
     {
       id: 'users',
       label: 'Users',
-      icon: '👥',
+      icon: <Users className="w-5 h-5" />,
       path: '/dashboard/users'
     },
     {
       id: 'registrations',
       label: 'Registrations',
-      icon: '📝',
+      icon: <FileText className="w-5 h-5" />,
       path: '/dashboard/registrations'
     },
     {
       id: 'settings',
       label: 'Settings',
-      icon: '⚙️',
+      icon: <Settings className="w-5 h-5" />,
       path: '/dashboard/settings'
     }
   ]
@@ -69,7 +70,9 @@ const Sidebar = ({ collapsed, onToggle, currentPage }) => {
                 className={`nav-link ${isActive(item) ? 'active' : ''}`}
                 title={collapsed ? item.label : ''}
               >
-                <span className="nav-icon">{item.icon}</span>
+                <span className="nav-icon">
+                  {typeof item.icon === 'string' ? item.icon : item.icon}
+                </span>
                 {!collapsed && <span className="nav-label">{item.label}</span>}
               </Link>
             </li>

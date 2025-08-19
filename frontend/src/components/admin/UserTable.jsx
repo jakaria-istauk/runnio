@@ -1,6 +1,7 @@
 
+import { Shield, User } from '../icons'
 
-const UserTable = ({ 
+const UserTable = ({
   users, 
   loading, 
   onEdit, 
@@ -21,10 +22,11 @@ const UserTable = ({
 
   const getRoleBadge = (role) => {
     const badgeClass = role === 'admin' ? 'badge-admin' : 'badge-user'
-    const icon = role === 'admin' ? '👨‍💼' : '👤'
+    const IconComponent = role === 'admin' ? Shield : User
     return (
       <span className={`role-badge ${badgeClass}`}>
-        {icon} {role.charAt(0).toUpperCase() + role.slice(1)}
+        <IconComponent className="w-4 h-4 inline mr-1" />
+        {role.charAt(0).toUpperCase() + role.slice(1)}
       </span>
     )
   }

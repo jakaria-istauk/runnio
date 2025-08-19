@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
+import { User, Settings, Home } from '../icons'
 
 const TopBar = ({ user, breadcrumbs, onToggleSidebar, sidebarCollapsed }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false)
@@ -95,7 +96,9 @@ const TopBar = ({ user, breadcrumbs, onToggleSidebar, sidebarCollapsed }) => {
                       navigate('/dashboard/profile')
                     }}
                   >
-                    <span className="dropdown-icon">👤</span>
+                    <span className="dropdown-icon">
+                      <User className="w-4 h-4" />
+                    </span>
                     Profile Settings
                   </button>
                 </li>
@@ -107,19 +110,23 @@ const TopBar = ({ user, breadcrumbs, onToggleSidebar, sidebarCollapsed }) => {
                       navigate('/dashboard/settings')
                     }}
                   >
-                    <span className="dropdown-icon">⚙️</span>
+                    <span className="dropdown-icon">
+                      <Settings className="w-4 h-4" />
+                    </span>
                     System Settings
                   </button>
                 </li>
                 <li>
-                  <button 
+                  <button
                     className="dropdown-item"
                     onClick={() => {
                       setDropdownOpen(false)
                       navigate('/dashboard')
                     }}
                   >
-                    <span className="dropdown-icon">🏠</span>
+                    <span className="dropdown-icon">
+                      <Home className="w-4 h-4" />
+                    </span>
                     User Dashboard
                   </button>
                 </li>

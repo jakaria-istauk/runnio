@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import api from '../../utils/api'
+import { Shield, User } from '../icons'
 
 const UserModal = ({ user, mode, onSave, onClose }) => {
   const [formData, setFormData] = useState({
@@ -154,7 +155,7 @@ const UserModal = ({ user, mode, onSave, onClose }) => {
                     ? 'bg-purple-100 text-purple-800'
                     : 'bg-blue-100 text-blue-800'
                 }`}>
-                  {user.role === 'admin' ? '👨‍💼' : '👤'}
+                  {user.role === 'admin' ? <Shield className="w-4 h-4" /> : <User className="w-4 h-4" />}
                   {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
                 </span>
               </div>
