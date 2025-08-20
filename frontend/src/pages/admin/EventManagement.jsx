@@ -3,21 +3,79 @@ import { Link } from 'react-router-dom'
 import api from '../../utils/api'
 import DashboardLayout from '../../components/DashboardLayout'
 import Icon from '../../components/Icon'
+import eventPlaceholder from '../../images/event-placeholder.jpeg'
 
 const EventManagement = () => {
   const [events, setEvents] = useState([])
+  const [filteredEvents, setFilteredEvents] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [filters, setFilters] = useState({
+    search: '',
+    type: 'all', // all, virtual, in-person
+    status: 'all' // all, upcoming, past
+  })
+  const [filtersExpanded, setFiltersExpanded] = useState(false)
 
   useEffect(() => {
     fetchEvents()
   }, [])
 
+  useEffect(() => {
+    applyFilters()
+  }, [events, filters])
+
+  const applyFilters = () => {
+    let filtered = [...events]
+
+    // Search filter
+    if (filters.search) {
+      filtered = filtered.filter(event =>
+        event.name.toLowerCase().includes(filters.search.toLowerCase())
+      )
+    }
+
+    // Type filter
+    if (filters.type !== 'all') {
+      if (filters.type === 'virtual') {
+        filtered = filtered.filter(event =>
+          event.location?.toLowerCase().includes('virtual') ||
+          event.location?.toLowerCase().includes('online') ||
+          !event.location
+        )
+      } else if (filters.type === 'in-person') {
+        filtered = filtered.filter(event =>
+          event.location &&
+          !event.location.toLowerCase().includes('virtual') &&
+          !event.location.toLowerCase().includes('online')
+        )
+      }
+    }
+
+    // Status filter
+    if (filters.status !== 'all') {
+      const now = new Date()
+      if (filters.status === 'upcoming') {
+        filtered = filtered.filter(event => new Date(event.event_date) > now)
+      } else if (filters.status === 'past') {
+        filtered = filtered.filter(event => new Date(event.event_date) <= now)
+      }
+    }
+
+    setFilteredEvents(filtered)
+  }
+
+  const handleFilterChange = (key, value) => {
+    setFilters(prev => ({ ...prev, [key]: value }))
+  }
+
   const fetchEvents = async () => {
     try {
       setLoading(true)
       const response = await api.get('/events?limit=50')
-      setEvents(response.data.data.events)
+      const eventsData = response.data.data.events
+      setEvents(eventsData)
+      setFilteredEvents(eventsData)
     } catch (err) {
       setError('Failed to load events')
     } finally {
@@ -44,6 +102,15 @@ const EventManagement = () => {
       month: 'short',
       day: 'numeric'
     })
+  }
+
+  const getEventLocation = (event) => {
+    if (!event.location ||
+        event.location.toLowerCase().includes('virtual') ||
+        event.location.toLowerCase().includes('online')) {
+      return 'Virtual'
+    }
+    return event.location
   }
 
   const breadcrumbs = [
@@ -78,13 +145,84 @@ const EventManagement = () => {
         </div>
       )}
 
-      {/* Events Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {events.map(event => (
+      {/* Filters Section */}
+      <div className="bg-white border border-gray-200 rounded-lg mb-6">
+        <button
+          onClick={() => setFiltersExpanded(!filtersExpanded)}
+          className="w-full px-4 py-3 flex items-center justify-between text-left hover:bg-gray-50 transition-colors"
+        >
+          <div className="flex items-center gap-2">
+            <Icon name="filter" size={16} className="text-gray-500" />
+            <span className="text-sm font-medium text-gray-700">Filters</span>
+            <span className="text-xs text-gray-500">
+              ({filteredEvents.length} of {events.length} events)
+            </span>
+          </div>
+          <Icon
+            name={filtersExpanded ? "chevron-up" : "chevron-down"}
+            size={16}
+            className="text-gray-400"
+          />
+        </button>
+
+        {filtersExpanded && (
+          <div className="px-4 pb-3 border-t border-gray-100">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-3">
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">Search Events</label>
+                <div className="relative">
+                  <Icon name="search" size={14} className="absolute left-2.5 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                  <input
+                    type="text"
+                    placeholder="Search by name..."
+                    value={filters.search}
+                    onChange={(e) => handleFilterChange('search', e.target.value)}
+                    className="w-full pl-8 pr-3 py-1.5 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">Event Type</label>
+                <select
+                  value={filters.type}
+                  onChange={(e) => handleFilterChange('type', e.target.value)}
+                  className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                >
+                  <option value="all">All Types</option>
+                  <option value="virtual">Virtual</option>
+                  <option value="in-person">In-Person</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">Status</label>
+                <select
+                  value={filters.status}
+                  onChange={(e) => handleFilterChange('status', e.target.value)}
+                  className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                >
+                  <option value="all">All Events</option>
+                  <option value="upcoming">Upcoming</option>
+                  <option value="past">Past</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Events Grid - 3-4 cards per row */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {filteredEvents.map(event => (
           <div key={event.id} className="card group hover:shadow-lg transition-all duration-200">
-            {/* Event Cover Image Placeholder */}
-            <div className="w-full h-48 bg-gradient-to-br from-primary-100 to-primary-200 rounded-lg mb-4 flex items-center justify-center">
-              <Icon name="runner" size={48} className="text-primary-600" />
+            {/* Event Cover Image */}
+            <div className="w-full h-48 rounded-lg mb-4 overflow-hidden bg-gray-100">
+              <img
+                src={eventPlaceholder}
+                alt={event.name}
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+              />
             </div>
 
             {/* Event Content */}
@@ -107,7 +245,7 @@ const EventManagement = () => {
                 </div>
                 <div className="flex items-center gap-2 text-gray-600">
                   <Icon name="map-pin" size={16} className="text-gray-400" />
-                  <span className="truncate">{event.location}</span>
+                  <span className="truncate">{getEventLocation(event)}</span>
                 </div>
                 <div className="flex items-center gap-2 text-gray-600">
                   <Icon name="activity" size={16} className="text-gray-400" />
@@ -164,15 +302,24 @@ const EventManagement = () => {
       </div>
 
       {/* Empty State */}
-      {events.length === 0 && !loading && (
+      {filteredEvents.length === 0 && !loading && (
         <div className="text-center py-12">
           <Icon name="calendar" size={48} className="text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No events found</h3>
-          <p className="text-gray-600 mb-6">Get started by creating your first running event.</p>
-          <Link to="/dashboard/events/create" className="btn btn-primary">
-            <Icon name="plus" size={16} />
-            Create Event
-          </Link>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">
+            {events.length === 0 ? 'No events found' : 'No events match your filters'}
+          </h3>
+          <p className="text-gray-600 mb-6">
+            {events.length === 0
+              ? 'Get started by creating your first running event.'
+              : 'Try adjusting your search criteria or filters.'
+            }
+          </p>
+          {events.length === 0 && (
+            <Link to="/dashboard/events/create" className="btn btn-primary">
+              <Icon name="plus" size={16} />
+              Create Event
+            </Link>
+          )}
         </div>
       )}
     </DashboardLayout>
