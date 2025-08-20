@@ -61,6 +61,7 @@ try {
     FiRefreshCw: require('react-icons/fi').FiRefreshCw,
     FiMoreHorizontal: require('react-icons/fi').FiMoreHorizontal,
     FiExternalLink: require('react-icons/fi').FiExternalLink,
+    FiShield: require('react-icons/fi').FiShield,
     
     // Sports specific
     FiTarget: require('react-icons/fi').FiTarget,
@@ -128,6 +129,7 @@ const fallbackIconMapping = {
   refresh: 'ArrowUpDown',
   'more-horizontal': 'Menu',
   'external-link': 'Paperclip',
+  shield: 'AlertTriangle',
 
   // Sports specific
   target: 'Activity',
@@ -192,6 +194,7 @@ const reactIconMapping = {
   refresh: 'FiRefreshCw',
   'more-horizontal': 'FiMoreHorizontal',
   'external-link': 'FiExternalLink',
+  shield: 'FiShield',
   
   // Sports specific
   target: 'FiTarget',
