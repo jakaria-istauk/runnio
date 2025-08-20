@@ -9,6 +9,7 @@ import Profile from './pages/Profile'
 import Settings from './pages/Settings'
 import UserManagement from './pages/admin/UserManagement'
 import EventManagement from './pages/admin/EventManagement'
+import EventForm from './pages/admin/EventForm'
 import RegistrationManagement from './pages/admin/RegistrationManagement'
 import ProtectedRoute from './components/ProtectedRoute'
 
@@ -71,6 +72,22 @@ function AppContent() {
             element={
               <ProtectedRoute requireAdmin>
                 <EventManagement />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard/events/create"
+            element={
+              <ProtectedRoute requireAdmin>
+                <EventForm />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard/events/:id/edit"
+            element={
+              <ProtectedRoute requireAdmin>
+                <EventForm />
               </ProtectedRoute>
             }
           />

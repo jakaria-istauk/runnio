@@ -62,6 +62,8 @@ try {
     FiMoreHorizontal: require('react-icons/fi').FiMoreHorizontal,
     FiExternalLink: require('react-icons/fi').FiExternalLink,
     FiShield: require('react-icons/fi').FiShield,
+    FiGrid: require('react-icons/fi').FiGrid,
+    FiList: require('react-icons/fi').FiList,
     
     // Sports specific
     FiTarget: require('react-icons/fi').FiTarget,
@@ -130,6 +132,8 @@ const fallbackIconMapping = {
   'more-horizontal': 'Menu',
   'external-link': 'Paperclip',
   shield: 'AlertTriangle',
+  grid: 'Grid',
+  list: 'List',
 
   // Sports specific
   target: 'Activity',
@@ -195,6 +199,8 @@ const reactIconMapping = {
   'more-horizontal': 'FiMoreHorizontal',
   'external-link': 'FiExternalLink',
   shield: 'FiShield',
+  grid: 'FiGrid',
+  list: 'FiList',
   
   // Sports specific
   target: 'FiTarget',

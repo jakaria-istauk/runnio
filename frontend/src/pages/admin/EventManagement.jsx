@@ -16,6 +16,7 @@ const EventManagement = () => {
     status: 'all' // all, upcoming, past
   })
   const [filtersExpanded, setFiltersExpanded] = useState(false)
+  const [viewMode, setViewMode] = useState('grid') // 'grid' or 'list'
 
   useEffect(() => {
     fetchEvents()
@@ -133,10 +134,38 @@ const EventManagement = () => {
           <h1>Event Management</h1>
           <p>Manage running events and registrations</p>
         </div>
-        <Link to="/dashboard/events/create" className="btn btn-primary">
-          <Icon name="plus" size={16} />
-          Create Event
-        </Link>
+        <div className="flex items-center gap-3">
+          {/* View Toggle */}
+          <div className="flex items-center bg-gray-100 rounded-lg p-1">
+            <button
+              onClick={() => setViewMode('grid')}
+              className={`px-3 py-1.5 rounded text-sm font-medium transition-colors ${
+                viewMode === 'grid'
+                  ? 'bg-white text-gray-900 shadow-sm'
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              <Icon name="grid" size={16} className="mr-1" />
+              Grid
+            </button>
+            <button
+              onClick={() => setViewMode('list')}
+              className={`px-3 py-1.5 rounded text-sm font-medium transition-colors ${
+                viewMode === 'list'
+                  ? 'bg-white text-gray-900 shadow-sm'
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              <Icon name="list" size={16} className="mr-1" />
+              List
+            </button>
+          </div>
+
+          <Link to="/dashboard/events/create" className="btn btn-primary">
+            <Icon name="plus" size={16} />
+            Create Event
+          </Link>
+        </div>
       </div>
 
       {error && (
@@ -212,18 +241,20 @@ const EventManagement = () => {
         )}
       </div>
 
-      {/* Events Grid - 3-4 cards per row */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {filteredEvents.map(event => (
-          <div key={event.id} className="card group hover:shadow-lg transition-all duration-200">
-            {/* Event Cover Image */}
-            <div className="w-full h-48 rounded-lg mb-4 overflow-hidden bg-gray-100">
-              <img
-                src={eventPlaceholder}
-                alt={event.name}
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
-              />
-            </div>
+      {/* Events Display */}
+      {viewMode === 'grid' ? (
+        /* Grid View - 3-4 cards per row */
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {filteredEvents.map(event => (
+            <div key={event.id} className="card group hover:shadow-lg transition-all duration-200">
+              {/* Event Cover Image */}
+              <div className="w-full h-48 rounded-lg mb-4 overflow-hidden bg-gray-100">
+                <img
+                  src={eventPlaceholder}
+                  alt={event.name}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+                />
+              </div>
 
             {/* Event Content */}
             <div className="space-y-4">
@@ -298,8 +329,115 @@ const EventManagement = () => {
               </div>
             </div>
           </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      ) : (
+        /* List View */
+        <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Event</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Distances</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {filteredEvents.map(event => (
+                  <tr key={event.id} className="hover:bg-gray-50 transition-colors">
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center">
+                        <div className="flex-shrink-0 h-12 w-12">
+                          <img
+                            src={eventPlaceholder}
+                            alt={event.name}
+                            className="h-12 w-12 rounded-lg object-cover"
+                          />
+                        </div>
+                        <div className="ml-4">
+                          <div className="text-sm font-medium text-gray-900">{event.name}</div>
+                          <div className="text-sm text-gray-500 max-w-xs truncate">{event.description}</div>
+                        </div>
+                      </div>
+                    </td>
+
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center gap-2">
+                        <Icon name="activity" size={16} className="text-gray-400" />
+                        <span className="text-sm text-gray-900">{event.type}</span>
+                      </div>
+                    </td>
+
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center gap-2">
+                        <Icon name="map-pin" size={16} className="text-gray-400" />
+                        <span className="text-sm text-gray-900">{getEventLocation(event)}</span>
+                      </div>
+                    </td>
+
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center gap-2">
+                        <Icon name="calendar" size={16} className="text-gray-400" />
+                        <span className="text-sm text-gray-900">{formatDate(event.event_date)}</span>
+                      </div>
+                    </td>
+
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center gap-2">
+                        <Icon name="target" size={16} className="text-gray-400" />
+                        <span className="text-sm text-gray-900">{event.distances?.join(', ') || 'N/A'}</span>
+                      </div>
+                    </td>
+
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                        new Date(event.event_date) > new Date()
+                          ? 'bg-green-100 text-green-800'
+                          : 'bg-gray-100 text-gray-800'
+                      }`}>
+                        {new Date(event.event_date) > new Date() ? 'Upcoming' : 'Past'}
+                      </span>
+                    </td>
+
+                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                      <div className="flex items-center gap-2">
+                        <Link
+                          to={`/events/${event.id}`}
+                          className="text-primary-600 hover:text-primary-900 p-1 rounded hover:bg-primary-50 transition-colors"
+                          title="View Details"
+                        >
+                          <Icon name="eye" size={16} />
+                        </Link>
+
+                        <Link
+                          to={`/dashboard/events/${event.id}/edit`}
+                          className="text-gray-600 hover:text-gray-900 p-1 rounded hover:bg-gray-50 transition-colors"
+                          title="Edit Event"
+                        >
+                          <Icon name="edit" size={16} />
+                        </Link>
+
+                        <button
+                          onClick={() => handleDeleteEvent(event.id)}
+                          className="text-red-600 hover:text-red-900 p-1 rounded hover:bg-red-50 transition-colors"
+                          title="Delete Event"
+                        >
+                          <Icon name="trash" size={16} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
 
       {/* Empty State */}
       {filteredEvents.length === 0 && !loading && (
