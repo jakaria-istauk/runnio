@@ -1,5 +1,6 @@
 
 import { Shield, User } from '../icons'
+import Icon from '../Icon'
 
 const UserTable = ({
   users, 
@@ -73,7 +74,7 @@ const UserTable = ({
     return (
       <div className="table-container">
         <div className="empty-state">
-          <div className="empty-icon">👥</div>
+          <Icon name="users" size={48} className="text-gray-400 mx-auto mb-4" />
           <h3>No users found</h3>
           <p>No users match your current filters. Try adjusting your search criteria.</p>
         </div>
@@ -135,23 +136,23 @@ const UserTable = ({
                       onClick={() => onView(user)}
                       title="View Details"
                     >
-                      👁️
+                      <Icon name="eye" size={16} />
                     </button>
-                    
+
                     <button
                       className="btn-action btn-edit"
                       onClick={() => onEdit(user)}
                       title="Edit User"
                     >
-                      ✏️
+                      <Icon name="edit" size={16} />
                     </button>
-                    
+
                     <button
                       className="btn-action btn-delete"
                       onClick={() => onDelete(user.id)}
                       title="Delete User"
                     >
-                      🗑️
+                      <Icon name="trash" size={16} />
                     </button>
                   </div>
                 </td>
@@ -175,7 +176,8 @@ const UserTable = ({
               onClick={() => onPageChange(pagination.current_page - 1)}
               disabled={pagination.current_page === 1}
             >
-              ← Previous
+              <Icon name="chevron-left" size={16} />
+              Previous
             </button>
             
             <div className="page-numbers">
@@ -198,7 +200,8 @@ const UserTable = ({
               onClick={() => onPageChange(pagination.current_page + 1)}
               disabled={pagination.current_page === pagination.total_pages}
             >
-              Next →
+              Next
+              <Icon name="chevron-right" size={16} />
             </button>
           </div>
         </div>

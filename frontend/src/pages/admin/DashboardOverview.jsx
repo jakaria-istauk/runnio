@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import api from '../../utils/api'
 import DashboardLayout from '../../components/DashboardLayout'
 import { Users, FileText, Plus, User } from '../../components/icons'
+import Icon from '../../components/Icon'
 
 
 const DashboardOverview = () => {
@@ -183,8 +184,10 @@ const DashboardOverview = () => {
               </div>
             </Link>
 
-            <Link to="/admin/settings" className="action-card">
-              <div className="action-icon">⚙️</div>
+            <Link to="/dashboard/settings" className="action-card">
+              <div className="action-icon">
+                <Icon name="settings" size={24} />
+              </div>
               <div className="action-content">
                 <h3>System Settings</h3>
                 <p>Configure platform settings</p>
@@ -197,7 +200,9 @@ const DashboardOverview = () => {
         <div className="dashboard-section">
           <div className="section-header">
             <h2>Recent Activity</h2>
-            <Link to="/admin/registrations" className="view-all-link">View All →</Link>
+            <Link to="/dashboard/registrations" className="view-all-link">
+              View All <Icon name="chevron-right" size={16} className="inline ml-1" />
+            </Link>
           </div>
           
           <div className="activity-feed">

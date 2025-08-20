@@ -5,8 +5,9 @@ import DashboardLayout from '../components/DashboardLayout'
 import Icon from '../components/Icon'
 
 const Settings = () => {
-  const { user } = useAuth()
+  const { user, isAdmin } = useAuth()
   const [settings, setSettings] = useState({
+    // User settings
     email_notifications: true,
     sms_notifications: false,
     marketing_emails: false,
@@ -15,7 +16,19 @@ const Settings = () => {
     newsletter: false,
     privacy_profile: 'public', // public, friends, private
     show_results: true,
-    show_upcoming_events: true
+    show_upcoming_events: true,
+
+    // Admin settings
+    site_name: 'Runnio',
+    site_description: 'Professional running events platform',
+    registration_enabled: true,
+    auto_approve_events: false,
+    max_events_per_user: 10,
+    email_from_name: 'Runnio Team',
+    email_from_address: 'noreply@runnio.com',
+    maintenance_mode: false,
+    analytics_enabled: true,
+    backup_frequency: 'daily'
   })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -30,6 +43,7 @@ const Settings = () => {
       // For now, use default settings
       // TODO: Replace with actual API call when backend is available
       setSettings({
+        // User settings
         email_notifications: true,
         sms_notifications: false,
         marketing_emails: false,
@@ -38,7 +52,19 @@ const Settings = () => {
         newsletter: false,
         privacy_profile: 'public',
         show_results: true,
-        show_upcoming_events: true
+        show_upcoming_events: true,
+
+        // Admin settings
+        site_name: 'Runnio',
+        site_description: 'Professional running events platform',
+        registration_enabled: true,
+        auto_approve_events: false,
+        max_events_per_user: 10,
+        email_from_name: 'Runnio Team',
+        email_from_address: 'noreply@runnio.com',
+        maintenance_mode: false,
+        analytics_enabled: true,
+        backup_frequency: 'daily'
       })
     } catch (err) {
       console.error('Failed to load settings:', err)
@@ -78,7 +104,7 @@ const Settings = () => {
 
   const breadcrumbs = [
     { label: 'Dashboard', link: '/dashboard' },
-    { label: 'Settings', link: null }
+    { label: isAdmin ? 'System Settings' : 'Settings', link: null }
   ]
 
   const ToggleSwitch = ({ checked, onChange, label, description }) => (
@@ -137,12 +163,27 @@ const Settings = () => {
 
   return (
     <DashboardLayout currentPage="settings" breadcrumbs={breadcrumbs}>
-      <div className="dashboard-overview">
-        <div className="dashboard-header">
-          <h1>Settings</h1>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '1.1rem' }}>
-            Manage your account preferences and privacy settings
-          </p>
+      <div className="space-y-8">
+        <div className="page-header">
+          <div className="header-content">
+            <h1>{isAdmin ? 'System Settings' : 'Settings'}</h1>
+            <p>
+              {isAdmin
+                ? 'Configure platform settings and system preferences'
+                : 'Manage your account preferences and privacy settings'
+              }
+            </p>
+          </div>
+          {isAdmin && (
+            <button
+              className="btn btn-primary"
+              onClick={handleSave}
+              disabled={loading}
+            >
+              <Icon name="save" size={16} />
+              Save Changes
+            </button>
+          )}
         </div>
 
         {error && (
@@ -158,9 +199,153 @@ const Settings = () => {
         )}
 
         <form onSubmit={handleSubmit}>
-          <div style={{ display: 'grid', gap: '2rem', maxWidth: '800px' }}>
-            {/* Notification Settings */}
-            <div className="card">
+          <div className="grid gap-6 max-w-4xl">
+            {isAdmin && (
+              <>
+                {/* System Configuration */}
+                <div className="card">
+                  <div className="flex items-center gap-2 mb-6">
+                    <Icon name="settings" size={20} className="text-gray-500" />
+                    <h2 className="text-xl font-semibold text-gray-900">System Configuration</h2>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="form-group">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Site Name</label>
+                      <input
+                        type="text"
+                        value={settings.site_name}
+                        onChange={(e) => handleSelectChange('site_name', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                      />
+                    </div>
+
+                    <div className="form-group">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Email From Name</label>
+                      <input
+                        type="text"
+                        value={settings.email_from_name}
+                        onChange={(e) => handleSelectChange('email_from_name', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                      />
+                    </div>
+
+                    <div className="form-group md:col-span-2">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Site Description</label>
+                      <textarea
+                        value={settings.site_description}
+                        onChange={(e) => handleSelectChange('site_description', e.target.value)}
+                        rows={3}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                      />
+                    </div>
+
+                    <div className="form-group">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Email From Address</label>
+                      <input
+                        type="email"
+                        value={settings.email_from_address}
+                        onChange={(e) => handleSelectChange('email_from_address', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                      />
+                    </div>
+
+                    <div className="form-group">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Max Events Per User</label>
+                      <input
+                        type="number"
+                        value={settings.max_events_per_user}
+                        onChange={(e) => handleSelectChange('max_events_per_user', parseInt(e.target.value))}
+                        min="1"
+                        max="100"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Platform Settings */}
+                <div className="card">
+                  <div className="flex items-center gap-2 mb-6">
+                    <Icon name="shield" size={20} className="text-gray-500" />
+                    <h2 className="text-xl font-semibold text-gray-900">Platform Settings</h2>
+                  </div>
+
+                  <div className="space-y-4">
+                    <ToggleSwitch
+                      checked={settings.registration_enabled}
+                      onChange={() => handleToggle('registration_enabled')}
+                      label="User Registration Enabled"
+                      description="Allow new users to register for accounts"
+                    />
+
+                    <ToggleSwitch
+                      checked={settings.auto_approve_events}
+                      onChange={() => handleToggle('auto_approve_events')}
+                      label="Auto-approve Events"
+                      description="Automatically approve new events without manual review"
+                    />
+
+                    <ToggleSwitch
+                      checked={settings.maintenance_mode}
+                      onChange={() => handleToggle('maintenance_mode')}
+                      label="Maintenance Mode"
+                      description="Put the site in maintenance mode (only admins can access)"
+                    />
+
+                    <ToggleSwitch
+                      checked={settings.analytics_enabled}
+                      onChange={() => handleToggle('analytics_enabled')}
+                      label="Analytics Tracking"
+                      description="Enable analytics and usage tracking"
+                    />
+                  </div>
+                </div>
+
+                {/* Backup Settings */}
+                <div className="card">
+                  <div className="flex items-center gap-2 mb-6">
+                    <Icon name="download" size={20} className="text-gray-500" />
+                    <h2 className="text-xl font-semibold text-gray-900">Backup & Maintenance</h2>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="form-group">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Backup Frequency</label>
+                      <select
+                        value={settings.backup_frequency}
+                        onChange={(e) => handleSelectChange('backup_frequency', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                      >
+                        <option value="daily">Daily</option>
+                        <option value="weekly">Weekly</option>
+                        <option value="monthly">Monthly</option>
+                        <option value="disabled">Disabled</option>
+                      </select>
+                    </div>
+
+                    <div className="form-group">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Actions</label>
+                      <div className="flex gap-2">
+                        <button type="button" className="btn btn-secondary text-sm">
+                          <Icon name="download" size={14} />
+                          Backup Now
+                        </button>
+                        <button type="button" className="btn btn-secondary text-sm">
+                          <Icon name="refresh" size={14} />
+                          Clear Cache
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
+
+            {!isAdmin && (
+              <>
+                {/* Notification Settings */}
+                <div className="card">
               <h2 style={{ marginBottom: '1.5rem', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
                 <Icon name="bell" size={20} /> Notification Preferences
               </h2>
@@ -321,18 +506,22 @@ const Settings = () => {
                 </div>
               </div>
             </div>
+              </>
+            )}
 
-            {/* Save Button */}
-            <div style={{ marginTop: '1rem' }}>
-              <button 
-                type="submit" 
-                className="btn btn-primary"
-                disabled={loading}
-                style={{ minWidth: '150px' }}
-              >
-                {loading ? 'Saving...' : 'Save Settings'}
-              </button>
-            </div>
+            {/* Save Button - Only show for non-admin users */}
+            {!isAdmin && (
+              <div className="flex justify-end">
+                <button
+                  type="submit"
+                  className="btn btn-primary"
+                  disabled={loading}
+                >
+                  <Icon name="save" size={16} />
+                  {loading ? 'Saving...' : 'Save Settings'}
+                </button>
+              </div>
+            )}
           </div>
         </form>
       </div>

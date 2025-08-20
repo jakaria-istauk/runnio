@@ -1,5 +1,6 @@
 import { Link, useLocation } from 'react-router-dom'
 import { BarChart, Users, FileText, Settings } from '../icons'
+import Icon from '../Icon'
 
 const Sidebar = ({ collapsed, onToggle, currentPage }) => {
   const location = useLocation()
@@ -52,12 +53,12 @@ const Sidebar = ({ collapsed, onToggle, currentPage }) => {
           <span className="logo-icon">🏃‍♂️</span>
           {!collapsed && <span className="logo-text">Runnio Admin</span>}
         </div>
-        <button 
+        <button
           className="sidebar-toggle"
           onClick={onToggle}
           aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
         >
-          {collapsed ? '→' : '←'}
+          <Icon name={collapsed ? 'chevron-right' : 'chevron-left'} size={16} />
         </button>
       </div>
 

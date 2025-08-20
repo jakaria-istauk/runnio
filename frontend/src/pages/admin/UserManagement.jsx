@@ -3,6 +3,7 @@ import api from '../../utils/api'
 import DashboardLayout from '../../components/DashboardLayout'
 import UserTable from '../../components/admin/UserTable'
 import UserModal from '../../components/admin/UserModal'
+import Icon from '../../components/Icon'
 
 
 const UserManagement = () => {
@@ -162,11 +163,11 @@ const UserManagement = () => {
             <h1>User Management</h1>
             <p>Manage user accounts, roles, and permissions</p>
           </div>
-          <button 
+          <button
             className="btn btn-primary"
             onClick={handleCreateUser}
           >
-            <span className="btn-icon">➕</span>
+            <Icon name="plus" size={16} />
             Add New User
           </button>
         </div>
@@ -174,37 +175,50 @@ const UserManagement = () => {
         {error && (
           <div className="alert alert-error">
             {error}
-            <button 
+            <button
               className="alert-close"
               onClick={() => setError('')}
             >
-              ✕
+              <Icon name="close" size={16} />
             </button>
           </div>
         )}
 
-        <div className="user-content">
-          <div className="filters-section">
-            <div className="filters-row">
-              <div className="filter-group">
-                <label htmlFor="search">Search Users</label>
-                <input
-                  id="search"
-                  type="text"
-                  placeholder="Search by name or email..."
-                  value={filters.search}
-                  onChange={(e) => handleFilterChange({ search: e.target.value })}
-                  className="filter-input"
-                />
+        <div className="space-y-6">
+          {/* Filters Section */}
+          <div className="card">
+            <div className="flex items-center gap-2 mb-4">
+              <Icon name="filter" size={20} className="text-gray-500" />
+              <h3 className="text-lg font-medium text-gray-900">Filters</h3>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="form-group">
+                <label htmlFor="search" className="block text-sm font-medium text-gray-700 mb-2">
+                  Search Users
+                </label>
+                <div className="relative">
+                  <Icon name="search" size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                  <input
+                    id="search"
+                    type="text"
+                    placeholder="Search by name or email..."
+                    value={filters.search}
+                    onChange={(e) => handleFilterChange({ search: e.target.value })}
+                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                  />
+                </div>
               </div>
 
-              <div className="filter-group">
-                <label htmlFor="role">Filter by Role</label>
+              <div className="form-group">
+                <label htmlFor="role" className="block text-sm font-medium text-gray-700 mb-2">
+                  Filter by Role
+                </label>
                 <select
                   id="role"
                   value={filters.role}
                   onChange={(e) => handleFilterChange({ role: e.target.value })}
-                  className="filter-select"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
                 >
                   <option value="">All Roles</option>
                   <option value="user">Users</option>
@@ -212,13 +226,15 @@ const UserManagement = () => {
                 </select>
               </div>
 
-              <div className="filter-group">
-                <label htmlFor="limit">Per Page</label>
+              <div className="form-group">
+                <label htmlFor="limit" className="block text-sm font-medium text-gray-700 mb-2">
+                  Per Page
+                </label>
                 <select
                   id="limit"
                   value={filters.limit}
                   onChange={(e) => handleFilterChange({ limit: parseInt(e.target.value) })}
-                  className="filter-select"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
                 >
                   <option value="10">10</option>
                   <option value="20">20</option>
@@ -228,16 +244,21 @@ const UserManagement = () => {
               </div>
             </div>
 
-            <div className="results-info">
-              {loading ? (
-                <span>Loading...</span>
-              ) : (
-                <span>
-                  Showing {users.length} of {pagination.total} users
-                  {filters.search && ` matching "${filters.search}"`}
-                  {filters.role && ` with role "${filters.role}"`}
-                </span>
-              )}
+            <div className="mt-4 pt-4 border-t border-gray-200">
+              <div className="flex items-center justify-between text-sm text-gray-600">
+                {loading ? (
+                  <div className="flex items-center gap-2">
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-600"></div>
+                    <span>Loading...</span>
+                  </div>
+                ) : (
+                  <span>
+                    Showing {users.length} of {pagination.total} users
+                    {filters.search && ` matching "${filters.search}"`}
+                    {filters.role && ` with role "${filters.role}"`}
+                  </span>
+                )}
+              </div>
             </div>
           </div>
 

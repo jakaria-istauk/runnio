@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
 import { User, Settings, Home } from '../icons'
+import Icon from '../Icon'
 
 const TopBar = ({ user, breadcrumbs, onToggleSidebar, sidebarCollapsed }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false)
@@ -73,7 +74,7 @@ const TopBar = ({ user, breadcrumbs, onToggleSidebar, sidebarCollapsed }) => {
               <span className="user-name">{user?.name || 'Admin'}</span>
               <span className="user-role">{user?.role || 'Administrator'}</span>
             </div>
-            <span className="dropdown-arrow">▼</span>
+            <Icon name="chevron-down" size={16} className="dropdown-arrow" />
           </button>
 
           {dropdownOpen && (

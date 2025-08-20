@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import api from '../../utils/api'
 import DashboardLayout from '../../components/DashboardLayout'
+import Icon from '../../components/Icon'
 
 const EventManagement = () => {
   const [events, setEvents] = useState([])
@@ -66,7 +67,7 @@ const EventManagement = () => {
           <p>Manage running events and registrations</p>
         </div>
         <Link to="/dashboard/events/create" className="btn btn-primary">
-          <span className="btn-icon">➕</span>
+          <Icon name="plus" size={16} />
           Create Event
         </Link>
       </div>
@@ -77,65 +78,103 @@ const EventManagement = () => {
         </div>
       )}
 
-      <div style={{ display: 'grid', gap: '1rem' }}>
+      {/* Events Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {events.map(event => (
-          <div key={event.id} className="card">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-              <div style={{ flex: 1 }}>
-                <h4 style={{ margin: '0 0 0.5rem 0' }}>
-                  <Link 
-                    to={`/events/${event.id}`}
-                    style={{ color: '#007bff', textDecoration: 'none' }}
-                  >
-                    {event.name}
-                  </Link>
-                </h4>
-                <p style={{ margin: '0 0 1rem 0', color: '#666' }}>
+          <div key={event.id} className="card group hover:shadow-lg transition-all duration-200">
+            {/* Event Cover Image Placeholder */}
+            <div className="w-full h-48 bg-gradient-to-br from-primary-100 to-primary-200 rounded-lg mb-4 flex items-center justify-center">
+              <Icon name="runner" size={48} className="text-primary-600" />
+            </div>
+
+            {/* Event Content */}
+            <div className="space-y-4">
+              {/* Event Title and Description */}
+              <div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-primary-600 transition-colors">
+                  {event.name}
+                </h3>
+                <p className="text-gray-600 text-sm line-clamp-2">
                   {event.description}
                 </p>
-                
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '1rem', fontSize: '14px' }}>
-                  <div>
-                    <strong>📅 Date:</strong> {formatDate(event.event_date)}
-                  </div>
-                  <div>
-                    <strong>📍 Location:</strong> {event.location}
-                  </div>
-                  <div>
-                    <strong>🏃‍♂️ Type:</strong> {event.type}
-                  </div>
-                  <div>
-                    <strong>📏 Distances:</strong> {event.distances?.join(', ') || 'N/A'}
-                  </div>
+              </div>
+
+              {/* Event Metadata */}
+              <div className="grid grid-cols-2 gap-3 text-sm">
+                <div className="flex items-center gap-2 text-gray-600">
+                  <Icon name="calendar" size={16} className="text-gray-400" />
+                  <span>{formatDate(event.event_date)}</span>
+                </div>
+                <div className="flex items-center gap-2 text-gray-600">
+                  <Icon name="map-pin" size={16} className="text-gray-400" />
+                  <span className="truncate">{event.location}</span>
+                </div>
+                <div className="flex items-center gap-2 text-gray-600">
+                  <Icon name="activity" size={16} className="text-gray-400" />
+                  <span>{event.type}</span>
+                </div>
+                <div className="flex items-center gap-2 text-gray-600">
+                  <Icon name="target" size={16} className="text-gray-400" />
+                  <span className="truncate">{event.distances?.join(', ') || 'N/A'}</span>
                 </div>
               </div>
-              
-              <div style={{ display: 'flex', gap: '0.5rem', marginLeft: '1rem' }}>
+
+              {/* Event Status Badge */}
+              <div className="flex items-center justify-between">
+                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                  new Date(event.event_date) > new Date()
+                    ? 'bg-green-100 text-green-800'
+                    : 'bg-gray-100 text-gray-800'
+                }`}>
+                  {new Date(event.event_date) > new Date() ? 'Upcoming' : 'Past'}
+                </span>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex items-center justify-between pt-4 border-t border-gray-100">
                 <Link
-                  to={`/dashboard/events/${event.id}/edit`}
-                  className="btn btn-secondary"
-                  style={{ padding: '5px 10px', fontSize: '12px' }}
+                  to={`/events/${event.id}`}
+                  className="text-primary-600 hover:text-primary-700 text-sm font-medium flex items-center gap-1 transition-colors"
                 >
-                  ✏️ Edit
+                  <Icon name="eye" size={14} />
+                  View Details
                 </Link>
-                
-                <button
-                  onClick={() => handleDeleteEvent(event.id)}
-                  className="btn"
-                  style={{ 
-                    padding: '5px 10px', 
-                    fontSize: '12px',
-                    backgroundColor: '#dc3545',
-                    color: 'white'
-                  }}
-                >
-                  🗑️ Delete
-                </button>
+
+                <div className="flex items-center gap-2">
+                  <Link
+                    to={`/dashboard/events/${event.id}/edit`}
+                    className="btn btn-secondary text-xs px-3 py-1.5"
+                  >
+                    <Icon name="edit" size={14} />
+                    Edit
+                  </Link>
+
+                  <button
+                    onClick={() => handleDeleteEvent(event.id)}
+                    className="btn text-xs px-3 py-1.5 bg-red-600 text-white hover:bg-red-700"
+                  >
+                    <Icon name="trash" size={14} />
+                    Delete
+                  </button>
+                </div>
               </div>
             </div>
           </div>
         ))}
       </div>
+
+      {/* Empty State */}
+      {events.length === 0 && !loading && (
+        <div className="text-center py-12">
+          <Icon name="calendar" size={48} className="text-gray-400 mx-auto mb-4" />
+          <h3 className="text-lg font-medium text-gray-900 mb-2">No events found</h3>
+          <p className="text-gray-600 mb-6">Get started by creating your first running event.</p>
+          <Link to="/dashboard/events/create" className="btn btn-primary">
+            <Icon name="plus" size={16} />
+            Create Event
+          </Link>
+        </div>
+      )}
     </DashboardLayout>
   )
 }
