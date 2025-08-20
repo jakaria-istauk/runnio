@@ -78,14 +78,16 @@ const DashboardSidebar = ({ collapsed, mobileMenuOpen, onToggle, onMobileToggle,
     `}>
       {/* Header */}
       <div className="flex items-center justify-between h-16 px-4 border-b border-gray-200">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
-            <Icon name="runner" size={20} className="text-white" />
+        <Link to="/" className="flex-1 flex items-center gap-3">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
+              <Icon name="runner" size={20} className="text-white" />
+            </div>
+            {!collapsed && (
+              <span className="text-xl font-bold text-gray-900">Runnio</span>
+            )}
           </div>
-          {!collapsed && (
-            <span className="text-xl font-bold text-gray-900">Runnio</span>
-          )}
-        </div>
+        </Link>
 
         <button
           className="hidden lg:flex items-center justify-center w-8 h-8 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
