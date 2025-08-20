@@ -49,17 +49,24 @@ const EventDetailPage = () => {
     try {
       setRegistering(true)
       setError('')
-      
+
       await api.post(`/events/${id}/register`, {
         distance: selectedDistance
       })
-      
+
       setRegistrationSuccess(true)
     } catch (err) {
       setError(err.response?.data?.message || 'Registration failed')
     } finally {
       setRegistering(false)
     }
+  }
+
+  const getEventLocation = (event) => {
+    if (event.type === 'virtual' || !event.location) {
+      return 'Virtual'
+    }
+    return event.location
   }
 
   if (loading) {
@@ -127,7 +134,8 @@ const EventDetailPage = () => {
           <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-6">
             <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 m-0">{event.name}</h1>
             <span className={`event-badge ${event.type === 'virtual' ? 'event-badge-virtual' : 'event-badge-onsite'} text-sm`}>
-              {event.type === 'virtual' ? '💻 Virtual Event' : '📍 On-site Event'}
+              <Icon name={event.type === 'virtual' ? 'external-link' : 'map-pin'} size={14} className="mr-1" />
+              {event.type === 'virtual' ? 'Virtual Event' : 'On-site Event'}
             </span>
           </div>
         </div>
@@ -146,33 +154,37 @@ const EventDetailPage = () => {
               <h3 className="text-xl font-semibold text-gray-900 mb-6">Event Details</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div className="event-card-meta-item">
-                  <span className="text-xl">📅</span>
+                  <Icon name="calendar" size={20} className="text-primary-600" />
                   <div>
                     <div className="font-medium text-gray-900">Date & Time</div>
                     <div className="text-gray-600">{formatDateTime(event.event_date)}</div>
                   </div>
                 </div>
 
-                {event.location && (
-                  <div className="event-card-meta-item">
-                    <span className="text-xl">📍</span>
-                    <div>
-                      <div className="font-medium text-gray-900">Location</div>
-                      <div className="text-gray-600">{event.location}</div>
-                    </div>
-                  </div>
-                )}
-
                 <div className="event-card-meta-item">
-                  <span className="text-xl">🏃‍♂️</span>
+                  <Icon name="map-pin" size={20} className="text-primary-600" />
                   <div>
-                    <div className="font-medium text-gray-900">Available Distances</div>
-                    <div className="text-gray-600">{event.distances.join(', ')}</div>
+                    <div className="font-medium text-gray-900">Location</div>
+                    <div className="text-gray-600">{getEventLocation(event)}</div>
                   </div>
                 </div>
 
                 <div className="event-card-meta-item">
-                  <span className="text-xl">📝</span>
+                  <Icon name="runner" size={20} className="text-primary-600" />
+                  <div>
+                    <div className="font-medium text-gray-900">Available Distances</div>
+                    <div className="flex flex-wrap gap-2 mt-1">
+                      {event.distances.map((distance, index) => (
+                        <span key={index} className="distance-badge distance-badge-primary">
+                          {distance}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="event-card-meta-item">
+                  <Icon name="clock" size={20} className="text-primary-600" />
                   <div>
                     <div className="font-medium text-gray-900">Registration Deadline</div>
                     <div className="text-gray-600">
@@ -186,7 +198,7 @@ const EventDetailPage = () => {
 
                 {event.submission_deadline && (
                   <div className="event-card-meta-item">
-                    <span className="text-xl">📤</span>
+                    <Icon name="upload" size={20} className="text-primary-600" />
                     <div>
                       <div className="font-medium text-gray-900">Results Submission</div>
                       <div className="text-gray-600">{formatDate(event.submission_deadline)}</div>
@@ -195,7 +207,7 @@ const EventDetailPage = () => {
                 )}
 
                 <div className="event-card-meta-item">
-                  <span className="text-xl">👥</span>
+                  <Icon name="users" size={20} className="text-primary-600" />
                   <div>
                     <div className="font-medium text-gray-900">Registrations</div>
                     <div className="text-gray-600">
@@ -208,7 +220,7 @@ const EventDetailPage = () => {
                 </div>
 
                 <div className="event-card-meta-item">
-                  <span className="text-xl">👤</span>
+                  <Icon name="user" size={20} className="text-primary-600" />
                   <div>
                     <div className="font-medium text-gray-900">Created by</div>
                     <div className="text-gray-600">{event.created_by_name}</div>
@@ -224,7 +236,7 @@ const EventDetailPage = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {event.metadata.entry_fee && (
                     <div className="event-card-meta-item">
-                      <span className="text-xl">💰</span>
+                      <Icon name="dollar-sign" size={20} className="text-primary-600" />
                       <div>
                         <div className="font-medium text-gray-900">Entry Fee</div>
                         <div className="text-gray-600">${event.metadata.entry_fee}</div>
@@ -234,7 +246,7 @@ const EventDetailPage = () => {
 
                   {event.metadata.difficulty_level && (
                     <div className="event-card-meta-item">
-                      <span className="text-xl">⭐</span>
+                      <Icon name="trending-up" size={20} className="text-primary-600" />
                       <div>
                         <div className="font-medium text-gray-900">Difficulty</div>
                         <div className="text-gray-600">{event.metadata.difficulty_level}</div>
@@ -244,7 +256,7 @@ const EventDetailPage = () => {
 
                   {event.metadata.max_participants && (
                     <div className="event-card-meta-item">
-                      <span className="text-xl">👥</span>
+                      <Icon name="users" size={20} className="text-primary-600" />
                       <div>
                         <div className="font-medium text-gray-900">Max Participants</div>
                         <div className="text-gray-600">
@@ -256,6 +268,55 @@ const EventDetailPage = () => {
                       </div>
                     </div>
                   )}
+
+                  {event.metadata.registration_link && (
+                    <div className="event-card-meta-item">
+                      <Icon name="external-link" size={20} className="text-primary-600" />
+                      <div>
+                        <div className="font-medium text-gray-900">External Registration</div>
+                        <a
+                          href={event.metadata.registration_link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-primary-600 hover:text-primary-700 underline"
+                        >
+                          Register Here
+                        </a>
+                      </div>
+                    </div>
+                  )}
+
+                  {event.metadata.social_event_link && (
+                    <div className="event-card-meta-item">
+                      <Icon name="external-link" size={20} className="text-primary-600" />
+                      <div>
+                        <div className="font-medium text-gray-900">Event Page</div>
+                        <a
+                          href={event.metadata.social_event_link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-primary-600 hover:text-primary-700 underline"
+                        >
+                          View Details
+                        </a>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Distance-Based Pricing */}
+            {event.metadata?.pricing && (
+              <div className="card">
+                <h3 className="text-xl font-semibold text-gray-900 mb-6">Pricing</h3>
+                <div className="space-y-3">
+                  {JSON.parse(event.metadata.pricing).map((pricing, index) => (
+                    <div key={index} className="flex justify-between items-center py-2 border-b border-gray-100 last:border-b-0">
+                      <span className="font-medium text-gray-900">{pricing.distance}</span>
+                      <span className="text-lg font-semibold text-primary-600">${pricing.price}</span>
+                    </div>
+                  ))}
                 </div>
               </div>
             )}

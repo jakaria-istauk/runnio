@@ -16,7 +16,7 @@ const EventManagement = () => {
     status: 'all' // all, upcoming, past
   })
   const [filtersExpanded, setFiltersExpanded] = useState(false)
-  const [viewMode, setViewMode] = useState('grid') // 'grid' or 'list'
+  const [viewMode, setViewMode] = useState('list') // 'grid' or 'list'
 
   useEffect(() => {
     fetchEvents()
@@ -106,9 +106,7 @@ const EventManagement = () => {
   }
 
   const getEventLocation = (event) => {
-    if (!event.location ||
-        event.location.toLowerCase().includes('virtual') ||
-        event.location.toLowerCase().includes('online')) {
+    if (event.type === 'virtual' || !event.location) {
       return 'Virtual'
     }
     return event.location
@@ -284,7 +282,17 @@ const EventManagement = () => {
                 </div>
                 <div className="flex items-center gap-2 text-gray-600">
                   <Icon name="target" size={16} className="text-gray-400" />
-                  <span className="truncate">{event.distances?.join(', ') || 'N/A'}</span>
+                  <div className="flex flex-wrap gap-1">
+                    {event.distances?.length > 0 ? (
+                      event.distances.map((distance, index) => (
+                        <span key={index} className="distance-badge text-xs">
+                          {distance}
+                        </span>
+                      ))
+                    ) : (
+                      <span className="text-gray-500">N/A</span>
+                    )}
+                  </div>
                 </div>
               </div>
 
@@ -387,10 +395,20 @@ const EventManagement = () => {
                       </div>
                     </td>
 
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
                         <Icon name="target" size={16} className="text-gray-400" />
-                        <span className="text-sm text-gray-900">{event.distances?.join(', ') || 'N/A'}</span>
+                        <div className="flex flex-wrap gap-1">
+                          {event.distances?.length > 0 ? (
+                            event.distances.map((distance, index) => (
+                              <span key={index} className="distance-badge text-xs">
+                                {distance}
+                              </span>
+                            ))
+                          ) : (
+                            <span className="text-sm text-gray-500">N/A</span>
+                          )}
+                        </div>
                       </div>
                     </td>
 

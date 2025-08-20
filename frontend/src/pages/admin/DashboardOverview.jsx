@@ -220,7 +220,9 @@ const DashboardOverview = () => {
                     </span>
                   </div>
                   <div className="activity-badge">
-                    {registration.distance}
+                    <span className="distance-badge distance-badge-primary">
+                      {registration.distance}
+                    </span>
                   </div>
                 </div>
               ))

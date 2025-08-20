@@ -17,7 +17,10 @@ const EventForm = () => {
     distances: ['5km'],
     event_date: '',
     registration_deadline: '',
-    submission_deadline: ''
+    submission_deadline: '',
+    registration_link: '',
+    social_event_link: '',
+    pricing: [{ distance: '5km', price: '' }]
   })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -42,7 +45,10 @@ const EventForm = () => {
         distances: event.distances || ['5km'],
         event_date: event.event_date ? event.event_date.split('T')[0] : '',
         registration_deadline: event.registration_deadline || '',
-        submission_deadline: event.submission_deadline || ''
+        submission_deadline: event.submission_deadline || '',
+        registration_link: event.metadata?.registration_link || '',
+        social_event_link: event.metadata?.social_event_link || '',
+        pricing: event.metadata?.pricing ? JSON.parse(event.metadata.pricing) : [{ distance: '5km', price: '' }]
       })
     } catch (err) {
       setError('Failed to load event details')
@@ -57,6 +63,31 @@ const EventForm = () => {
       ...prev,
       [name]: value
     }))
+  }
+
+  const handlePricingChange = (index, field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      pricing: prev.pricing.map((item, i) =>
+        i === index ? { ...item, [field]: value } : item
+      )
+    }))
+  }
+
+  const addPricingTier = () => {
+    setFormData(prev => ({
+      ...prev,
+      pricing: [...prev.pricing, { distance: '', price: '' }]
+    }))
+  }
+
+  const removePricingTier = (index) => {
+    if (formData.pricing.length > 1) {
+      setFormData(prev => ({
+        ...prev,
+        pricing: prev.pricing.filter((_, i) => i !== index)
+      }))
+    }
   }
 
   const handleDistanceChange = (index, value) => {
@@ -91,7 +122,12 @@ const EventForm = () => {
     try {
       const submitData = {
         ...formData,
-        distances: formData.distances.filter(d => d.trim() !== '')
+        distances: formData.distances.filter(d => d.trim() !== ''),
+        metadata: {
+          registration_link: formData.registration_link,
+          social_event_link: formData.social_event_link,
+          pricing: JSON.stringify(formData.pricing.filter(p => p.distance && p.price))
+        }
       }
 
       if (isEdit) {
@@ -186,7 +222,7 @@ const EventForm = () => {
                   required
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
                 >
-                  <option value="onsite">In-Person</option>
+                  <option value="onsite">On Site</option>
                   <option value="virtual">Virtual</option>
                 </select>
               </div>
@@ -243,6 +279,98 @@ const EventForm = () => {
                 <Icon name="plus" size={16} />
                 Add Distance
               </button>
+            </div>
+          </div>
+
+          <div className="card">
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">Pricing & Registration</h2>
+
+            <div className="space-y-6">
+              {/* Registration Link */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Registration Link
+                </label>
+                <input
+                  type="url"
+                  name="registration_link"
+                  value={formData.registration_link}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                  placeholder="https://example.com/register"
+                />
+                <p className="text-sm text-gray-500 mt-1">External registration URL (optional)</p>
+              </div>
+
+              {/* Social Event Link */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Social Event Link
+                </label>
+                <input
+                  type="url"
+                  name="social_event_link"
+                  value={formData.social_event_link}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                  placeholder="https://facebook.com/event/123"
+                />
+                <p className="text-sm text-gray-500 mt-1">Social media or event website URL (optional)</p>
+              </div>
+
+              {/* Distance-Based Pricing */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Distance-Based Pricing
+                </label>
+                <div className="space-y-3">
+                  {formData.pricing.map((pricing, index) => (
+                    <div key={index} className="flex items-center gap-3">
+                      <select
+                        value={pricing.distance}
+                        onChange={(e) => handlePricingChange(index, 'distance', e.target.value)}
+                        className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                      >
+                        <option value="">Select Distance</option>
+                        {formData.distances.map((distance, i) => (
+                          <option key={i} value={distance}>{distance}</option>
+                        ))}
+                      </select>
+                      <div className="flex items-center">
+                        <span className="text-gray-500 mr-2">$</span>
+                        <input
+                          type="number"
+                          value={pricing.price}
+                          onChange={(e) => handlePricingChange(index, 'price', e.target.value)}
+                          className="w-24 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                          placeholder="0.00"
+                          step="0.01"
+                          min="0"
+                        />
+                      </div>
+                      {formData.pricing.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => removePricingTier(index)}
+                          className="p-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg transition-colors"
+                        >
+                          <Icon name="trash" size={16} />
+                        </button>
+                      )}
+                    </div>
+                  ))}
+
+                  <button
+                    type="button"
+                    onClick={addPricingTier}
+                    className="flex items-center gap-2 text-primary-600 hover:text-primary-700 text-sm font-medium"
+                  >
+                    <Icon name="plus" size={16} />
+                    Add Pricing Tier
+                  </button>
+                </div>
+                <p className="text-sm text-gray-500 mt-1">Set different prices for different distances (optional)</p>
+              </div>
             </div>
           </div>
 

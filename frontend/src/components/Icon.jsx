@@ -69,6 +69,9 @@ try {
     FiTarget: require('react-icons/fi').FiTarget,
     FiAward: require('react-icons/fi').FiAward,
     FiFlag: require('react-icons/fi').FiFlag,
+
+    // Financial
+    FiDollarSign: require('react-icons/fi').FiDollarSign,
   }
 } catch (error) {
   // react-icons not available, will use fallback
@@ -142,6 +145,9 @@ const fallbackIconMapping = {
   runner: '🏃‍♂️', // Keep the running emoji as specified
   medal: 'Activity',
   stopwatch: 'Clock',
+
+  // Financial
+  'dollar-sign': 'Activity', // Using Activity as fallback for dollar sign
 }
 
 // Icon name to react-icons component mapping
@@ -209,6 +215,9 @@ const reactIconMapping = {
   runner: 'FiActivity', // Using activity icon for runner
   medal: 'FiAward', // Using award icon for medal
   stopwatch: 'FiClock', // Using clock icon for stopwatch
+
+  // Financial
+  'dollar-sign': 'FiDollarSign',
 }
 
 const Icon = ({

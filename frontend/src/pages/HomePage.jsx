@@ -58,6 +58,13 @@ const HomePage = () => {
     setPagination(prev => ({ ...prev, page: newPage }))
   }
 
+  const getEventLocation = (event) => {
+    if (event.type === 'virtual' || !event.location) {
+      return 'Virtual'
+    }
+    return event.location
+  }
+
   if (loading && events.length === 0) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -265,18 +272,22 @@ const EventCard = ({ event }) => {
               <span>{formatDateTime(event.event_date)}</span>
             </div>
 
-            {event.location && (
-              <div className="flex items-center gap-2">
-                <Icon name="map-pin" size={16} className="text-gray-500" />
-                <span className="truncate">{event.location}</span>
-              </div>
-            )}
+            <div className="flex items-center gap-2">
+              <Icon name="map-pin" size={16} className="text-gray-500" />
+              <span className="truncate">{getEventLocation(event)}</span>
+            </div>
           </div>
 
           <div className="flex items-center gap-6 text-sm text-gray-600 flex-wrap">
             <div className="flex items-center gap-2">
-              <span className="text-lg">🏃‍♂️</span>
-              <span>{event.distances.join(', ')}</span>
+              <Icon name="runner" size={16} className="text-primary-600" />
+              <div className="flex flex-wrap gap-1">
+                {event.distances.map((distance, index) => (
+                  <span key={index} className="distance-badge">
+                    {distance}
+                  </span>
+                ))}
+              </div>
             </div>
 
             <div className="flex items-center gap-2">
